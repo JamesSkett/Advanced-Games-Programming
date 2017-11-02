@@ -326,28 +326,26 @@ void Renderer::RenderFrame(void)
 	g_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
 
-	//XMMATRIX transpose, transpose2;
+	XMMATRIX transpose, transpose2;
 	CONSTANT_BUFFER0 cb0_values;
-
-	
 
 	XMMATRIX projection, cube1world, cube2world, view;
 
 
-	//cube1world = XMMatrixRotationY(XMConvertToRadians(degrees));
-	//cube1world *= XMMatrixRotationX(XMConvertToRadians(degrees2));
-	//cube1world = XMMatrixTranslation(0, 0, 8);
+	cube1world = XMMatrixRotationY(XMConvertToRadians(degrees));
+	cube1world *= XMMatrixRotationX(XMConvertToRadians(degrees2));
+	cube1world = XMMatrixTranslation(0, 0, 8);
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 640.0f / 480.0f, 1.0f, 100.0f);
 	view = camera->GetViewMatrix();
 	cb0_values.WorldViewProjection = cube1world * view * projection;
 
-	//transpose = XMMatrixTranspose(cube1world); // model world matrix
+	transpose = XMMatrixTranspose(cube1world); // model world matrix
 
 
-	//cb0_values.directional_light_colour = g_directional_light_colour;
-	//cb0_values.ambient_light_colour = g_ambient_light_colour;
-	//cb0_values.directional_light_vector = XMVector3Transform(g_directional_light_shines_from, transpose);
-	//cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
+	cb0_values.directional_light_colour = g_directional_light_colour;
+	cb0_values.ambient_light_colour = g_ambient_light_colour;
+	cb0_values.directional_light_vector = XMVector3Transform(g_directional_light_shines_from, transpose);
+	cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
 
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer0, 0, 0, &cb0_values, 0, 0);
@@ -358,13 +356,13 @@ void Renderer::RenderFrame(void)
 	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture0);
 
 
-	//mesh->SetScale(-1.5f);
+	//mesh->SetScale(-5.5f);
 
 
-	mesh->Draw(&view, &projection);
+	//mesh->Draw(&view, &projection);
 
-	// Draw the vertex buffer to the back buffer
-	//m_pImmediateContext->Draw(36, 0);
+	//Draw the vertex buffer to the back buffer
+	m_pImmediateContext->Draw(36, 0);
 
 	//cube2world = XMMatrixRotationX(XMConvertToRadians(degrees));
 	//cube2world *= XMMatrixRotationY(XMConvertToRadians(degrees2));
@@ -380,12 +378,12 @@ void Renderer::RenderFrame(void)
 	//cb0_values.directional_light_vector = XMVector3Normalize(cb0_values.directional_light_vector);
 
 	// upload the new values for the constant buffer
-	//m_pImmediateContext->UpdateSubresource(m_pConstantBuffer0, 0, 0, &cb0_values, 0, 0);
+	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer0, 0, 0, &cb0_values, 0, 0);
 
-	//m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer0);
+	m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer0);
 
 	// Draw the vertex buffer to the back buffer
-	//m_pImmediateContext->Draw(36, 0);
+	m_pImmediateContext->Draw(36, 0);
 
 	//Set the vertex buffer //03-01
 	UINT stride = sizeof(POS_COL_TEX_NORM_VERTEX);
@@ -416,8 +414,8 @@ HRESULT Renderer::InitialiseGraphics(void)
 {
 	HRESULT hr = S_OK;
 
-	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/AK47.obj");
+	//mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
+	//mesh->LoadObjModel("assets/Door.obj");
 
 	// Define vertices of a triangle - screen coordinates -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
