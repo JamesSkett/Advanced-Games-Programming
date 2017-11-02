@@ -358,7 +358,7 @@ void Renderer::RenderFrame(void)
 	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture0);
 
 
-	mesh->SetScale(-1.5f);
+	//mesh->SetScale(-1.5f);
 
 
 	mesh->Draw(&view, &projection);
@@ -417,7 +417,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	HRESULT hr = S_OK;
 
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/Sphere.obj");
+	mesh->LoadObjModel("assets/AK47.obj");
 
 	// Define vertices of a triangle - screen coordinates -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
