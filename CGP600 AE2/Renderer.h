@@ -12,6 +12,7 @@ using namespace DirectX;
 #include "Camera.h"
 #include "CXBOXController.h"
 #include "text2D.h"
+#include "Mesh.h"
 
 class Renderer
 {
@@ -26,7 +27,8 @@ public:
 	HRESULT InitialiseGraphics(void);
 
 	static Camera* camera;
-
+	
+	Mesh* mesh;
 
 private:
 	
