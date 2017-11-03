@@ -119,24 +119,25 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 
 	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	XMMATRIX world;
+	XMMATRIX meshWorld;
 
-	world = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
-	world *= XMMatrixTranslation(m_x, m_y, m_z);
+	meshWorld = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	meshWorld *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	meshWorld *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
-	model_cb_values.WorldViewProjection = world * (*view) * (*projection);
+	model_cb_values.WorldViewProjection = meshWorld * (*view) * (*projection);
+	//model_cb_values.World = XMMatrixTranspose(meshWorld);
 
-	transpose = XMMatrixTranspose(world); // model world matrix
+
+	transpose = XMMatrixTranspose(meshWorld); // model world matrix
 
 
 	model_cb_values.directional_light_colour = m_directional_light_colour;
 	model_cb_values.ambient_light_colour = m_ambient_light_colour;
 	model_cb_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
 	model_cb_values.directional_light_vector = XMVector3Normalize(model_cb_values.directional_light_vector);
-
 
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
