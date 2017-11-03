@@ -45,7 +45,7 @@ int Mesh::LoadObjModel(char* fileName)
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
 
 	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;	// Can use UpdateSubresource() to update
-	constant_buffer_desc.ByteWidth = 64;  // Must Be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.ByteWidth = 112;  // Must Be a multiple of 16, calculate from CB struct
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Use as a constant buffer
 
 	hr = m_pD3D11Device->CreateBuffer(&constant_buffer_desc, NULL, &m_pConstantBuffer);
@@ -97,20 +97,46 @@ int Mesh::LoadObjModel(char* fileName)
 
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
+	/*D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+	sampler_desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_pD3D11Device->CreateSamplerState(&sampler_desc, &m_pSampler0);*/
+
 
 	return 0;
 }
 
 void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
+	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+
+	m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+
+	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
+
 	XMMATRIX world;
 
 	world = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
+	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
 	model_cb_values.WorldViewProjection = world * (*view) * (*projection);
+
+	transpose = XMMatrixTranspose(world); // model world matrix
+
+
+	model_cb_values.directional_light_colour = m_directional_light_colour;
+	model_cb_values.ambient_light_colour = m_ambient_light_colour;
+	model_cb_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
+	model_cb_values.directional_light_vector = XMVector3Normalize(model_cb_values.directional_light_vector);
+
 
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
@@ -120,9 +146,15 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 	m_pImmediateContext->VSSetShader(m_pVShader, 0, 0);
 	m_pImmediateContext->PSSetShader(m_pPShader, 0, 0);
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
+	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture);
 
 	m_pObject->Draw();
 
+}
+
+void Mesh::AddTexture(char * fileName)
+{
+	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, fileName, NULL, NULL, &m_pTexture, NULL);
 }
 
 void Mesh::SetXPos(float x_pos)
