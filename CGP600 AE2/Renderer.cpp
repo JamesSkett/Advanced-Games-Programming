@@ -356,8 +356,8 @@ void Renderer::RenderFrame(void)
 	//m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture0);
 
 
-	mesh->SetScale(0.5f);
-	//mesh->SetXAngle(180.0f);
+	mesh->SetScale(0.3f);
+	mesh->SetXAngle(degrees2);
 
 
 	mesh->Draw(&view, &projection);
@@ -501,7 +501,9 @@ HRESULT Renderer::InitialiseGraphics(void)
 		return hr;
 	}
 
-	D3DX11CreateShaderResourceViewFromFile(m_pD3DDevice, "assets/texture.bmp", NULL, NULL, &m_pTexture0, NULL);
+	//D3DX11CreateShaderResourceViewFromFile(m_pD3DDevice, "assets/texture.bmp", NULL, NULL, &m_pTexture0, NULL);
+
+	mesh->AddTexture("assets/gun_D.bmp");
 
 	D3D11_SAMPLER_DESC sampler_desc;
 	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
