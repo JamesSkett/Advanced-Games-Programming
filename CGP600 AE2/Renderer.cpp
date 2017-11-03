@@ -357,8 +357,8 @@ void Renderer::RenderFrame(void)
 
 
 	mesh->SetScale(0.3f);
-	mesh->SetXAngle(degrees2);
-
+	mesh->SetYAngle(degrees2);
+	mesh->SetZPos(3.0f);
 
 	mesh->Draw(&view, &projection);
 
