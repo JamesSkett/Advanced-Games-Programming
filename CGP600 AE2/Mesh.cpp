@@ -13,7 +13,7 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_xangle = 0.0f;
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
-	m_scale = 0.0f;
+	m_scale = 1.0f;
 }
 
 Mesh::~Mesh()
@@ -85,7 +85,7 @@ int Mesh::LoadObjModel(char* fileName)
 	D3D11_INPUT_ELEMENT_DESC iedesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0,    0,                            D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 
@@ -105,7 +105,7 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
 	XMMATRIX world;
 
-	world = XMMatrixRotationX(m_xangle) * XMMatrixRotationY(m_yangle) * XMMatrixRotationZ(m_zangle);
+	world = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
 	world *= XMMatrixTranslation(m_x, m_y, m_z);
 
