@@ -24,7 +24,7 @@ Mesh::~Mesh()
 	if (m_pInputLayout)  m_pInputLayout->Release();
 	if (m_pVShader) m_pVShader->Release();
 	if (m_pPShader)  m_pPShader->Release();
-	//if (m_pTexture0)     m_pTexture0->Release();
+	if (m_pTexture)     m_pTexture->Release();
 	//if (m_pSampler0)     m_pSampler0->Release();
 
 	if (m_pConstantBuffer)  m_pConstantBuffer->Release();

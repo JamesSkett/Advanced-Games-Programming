@@ -12,7 +12,6 @@ using namespace DirectX;
 struct MODEL_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
-	//XMMATRIX World;
 	XMVECTOR directional_light_vector;	// 16 bytes
 	XMVECTOR directional_light_colour;	// 16 bytes
 	XMVECTOR ambient_light_colour;	// 16 bytes
