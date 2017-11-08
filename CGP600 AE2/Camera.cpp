@@ -65,6 +65,21 @@ void Camera::Pitch(float number_of_degrees)
 
 }
 
+float Camera::GetX()
+{
+	return m_x;
+}
+
+float Camera::GetY()
+{
+	return m_y;
+}
+
+float Camera::GetZ()
+{
+	return m_z;
+}
+
 XMMATRIX Camera::GetViewMatrix()
 {
 	m_position = XMVectorSet(m_x, m_y, m_z, 0.0f);

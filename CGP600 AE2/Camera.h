@@ -23,6 +23,10 @@ public:
 	void Strafe(float distance);
 	void Pitch(float number_of_degrees);
 
+	float GetX();
+	float GetY();
+	float GetZ();
+
 	XMMATRIX GetViewMatrix();
 
 private:
