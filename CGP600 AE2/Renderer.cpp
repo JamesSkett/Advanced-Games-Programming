@@ -270,20 +270,23 @@ void Renderer::RenderFrame(void)
 	float leftSticValY = player1->GetState().Gamepad.sThumbLY / 1000.0f;
 	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 1000.0f;
 
+	float rightSticValY = player1->GetState().Gamepad.sThumbRY / 1000.0f;
+	float rightSticValY = player1->GetState().Gamepad.sThumbRX / 1000.0f;
+
 
 	if (player1->IsConnected())
 	{
 		if ((leftSticValY > 10) || (leftSticValY < -10))
 		{
 			
-			camera->Forward(leftSticValY / 10000.0f);
+			mesh->UpdateXAngle(leftSticValY / 1000.0f);
 		
 		}
 
 		if ((leftSticValX > 10) || (leftSticValX < -10))
 		{
 
-			camera->Strafe(-leftSticValX / 10000.0f);
+			mesh->UpdateYAngle(leftSticValX / 1000.0f);
 
 		}
 
@@ -363,8 +366,10 @@ void Renderer::RenderFrame(void)
 	view = camera->GetViewMatrix();
 
 	//mesh->SetYAngle(degrees2);
-	mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
+	//mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
 	mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
+
+	camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 
 	mesh->Draw(&view, &projection);
 	mesh2->Draw(&view, &projection);
