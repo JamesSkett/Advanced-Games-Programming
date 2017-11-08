@@ -55,5 +55,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	renderer->ShutdownD3D();
 
+	if (renderer)
+	{
+		delete renderer;
+		renderer = nullptr;
+	}
+
 	return (int)msg.wParam;
 }
