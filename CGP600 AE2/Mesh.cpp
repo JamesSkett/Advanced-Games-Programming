@@ -105,7 +105,7 @@ int Mesh::LoadObjModel(char* fileName)
 
 void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 {
-	m_directional_light_shines_from = XMVectorSet(0.0f, -1.0f, -1.0f, 0.0f);
+	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 
 	m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 
@@ -265,9 +265,13 @@ void Mesh::UpdateScale(float scale)
 	m_scale += scale;
 }
 
-void Mesh::Lookat_XZ(float targetX, float targetZ)
+void Mesh::Lookat_XZ(float targetX, float targetY, float targetZ)
 {
 	m_yangle = atan2((targetX - m_x), (targetZ - m_z)) * (180 / XM_PI);
+
+	float xzDiff = sqrt(pow(m_x, 2) + pow(targetZ, 2));
+
+	m_xangle = -atan2((targetY - m_y), xzDiff) * (180 / XM_PI);
 }
 
 

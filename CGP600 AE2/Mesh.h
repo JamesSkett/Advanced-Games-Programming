@@ -55,7 +55,7 @@ public:
 	void UpdateZAngle(float angle);
 	void UpdateScale(float scale);
 
-	void Lookat_XZ(float targetX, float targetZ);
+	void Lookat_XZ(float targetX, float targetY, float targetZ);
 
 private:
 	ID3D11Device*        m_pD3D11Device;
