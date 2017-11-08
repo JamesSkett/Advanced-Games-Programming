@@ -336,6 +336,16 @@ void Renderer::RenderFrame(void)
 		{
 			mesh->UpdateXPos(-0.01f);
 		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		{
+			mesh->UpdateYPos(-0.01f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_X)
+		{
+			mesh->UpdateYPos(0.01f);
+		}
 	}
 	else
 	{
@@ -353,8 +363,8 @@ void Renderer::RenderFrame(void)
 	view = camera->GetViewMatrix();
 
 	//mesh->SetYAngle(degrees2);
-	//mesh->Lookat_XZ(camera->GetX(), camera->GetZ());
-	mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetZPos());
+	mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
+	mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 
 	mesh->Draw(&view, &projection);
 	mesh2->Draw(&view, &projection);
@@ -370,9 +380,9 @@ void Renderer::RenderFrame(void)
 HRESULT Renderer::InitialiseGraphics(void)
 {
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/AK47.obj");
-	mesh->SetScale(0.3f);
-	mesh->SetZPos(3.0f);
+	mesh->LoadObjModel("assets/Spaceship.obj");
+	mesh->SetScale(0.1f);
+	mesh->SetZPos(7.0f);
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh2->LoadObjModel("assets/cube.obj");
@@ -381,7 +391,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	mesh2->SetYPos(3.0f);
 
 
-	mesh->AddTexture("assets/gun_D.bmp");
+	mesh->AddTexture("assets/Spaceship_D.bmp");
 	mesh2->AddTexture("assets/texture.bmp");
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
