@@ -21,7 +21,7 @@ Camera::~Camera()
 {
 }
 
-void Camera::Rotate(float number_of_degrees)
+void Camera::Rotate(float number_of_degrees /*float objectX, float objectY, float objectZ*/)
 {
 	m_camera_rotation += number_of_degrees;
 
@@ -78,6 +78,13 @@ float Camera::GetY()
 float Camera::GetZ()
 {
 	return m_z;
+}
+
+void Camera::CameraFollow(float targetX, float targetY, float targetZ)
+{
+	m_x = targetX;
+	m_y = targetY + 3;
+	m_z = targetZ - 12;
 }
 
 XMMATRIX Camera::GetViewMatrix()

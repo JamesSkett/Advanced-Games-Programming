@@ -27,6 +27,8 @@ public:
 	float GetY();
 	float GetZ();
 
+	void CameraFollow(float targetX, float targetY, float targetZ);
+
 	XMMATRIX GetViewMatrix();
 
 private:
