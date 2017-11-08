@@ -97,15 +97,7 @@ int Mesh::LoadObjModel(char* fileName)
 
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
-	/*D3D11_SAMPLER_DESC sampler_desc;
-	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
-	sampler_desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	m_pD3D11Device->CreateSamplerState(&sampler_desc, &m_pSampler0);*/
 
 
 	return 0;
@@ -156,6 +148,16 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 void Mesh::AddTexture(char * fileName)
 {
 	D3DX11CreateShaderResourceViewFromFile(m_pD3D11Device, fileName, NULL, NULL, &m_pTexture, NULL);
+
+	D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+	sampler_desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_pD3D11Device->CreateSamplerState(&sampler_desc, &m_pSampler0);
 }
 
 void Mesh::SetXPos(float x_pos)
@@ -262,5 +264,11 @@ void Mesh::UpdateScale(float scale)
 {
 	m_scale += scale;
 }
+
+void Mesh::Lookat_XZ(float targetX, float targetZ)
+{
+	m_yangle = atan2((targetX - m_x), (targetZ - m_z)) * (180 / XM_PI);
+}
+
 
 
