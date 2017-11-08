@@ -29,6 +29,9 @@ public:
 	static Camera* camera;
 	
 	Mesh* mesh;
+	Mesh* mesh2;
+
+	void CreateMesh(char* fileName);
 
 private:
 	
@@ -61,26 +64,8 @@ private:
 	XMVECTOR g_ambient_light_colour;
 
 	CXBOXController* player1 = new CXBOXController(1);
-	Text2D * m_2DText;
 
 
-	struct POS_COL_TEX_NORM_VERTEX
-	{
-		XMFLOAT3 Pos;
-		XMFLOAT4 Col;
-		XMFLOAT2 Texture0;
-		XMFLOAT3 Normal;
-	};
-
-	struct CONSTANT_BUFFER0
-	{
-		//XMFLOAT3 packing_bytes; // 3x4 bytes = 12 bytes
-
-		XMMATRIX WorldViewProjection;
-		XMVECTOR directional_light_vector;	// 16 bytes
-		XMVECTOR directional_light_colour;	// 16 bytes
-		XMVECTOR ambient_light_colour;	// 16 bytes
-	}; // TOTAL SIZE = 112 bytes
 
 	
 };
