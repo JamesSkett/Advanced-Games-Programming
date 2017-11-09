@@ -271,7 +271,7 @@ void Renderer::RenderFrame(void)
 	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 1000.0f;
 
 	float rightSticValY = player1->GetState().Gamepad.sThumbRY / 1000.0f;
-	float rightSticValY = player1->GetState().Gamepad.sThumbRX / 1000.0f;
+	float rightSticValX = player1->GetState().Gamepad.sThumbRX / 1000.0f;
 
 
 	if (player1->IsConnected())
@@ -322,12 +322,12 @@ void Renderer::RenderFrame(void)
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
 		{
-			mesh->UpdateZPos(0.01f);
+			mesh->MoveForward(0.01f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
 		{
-			mesh->UpdateZPos(-0.01f);
+			mesh->MoveForward(-0.01f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
@@ -369,7 +369,8 @@ void Renderer::RenderFrame(void)
 	//mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
 	mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 
-	camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
+	//camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
+	//camera->LookAt(mesh->GetXPos(), mesh->GetZPos());
 
 	mesh->Draw(&view, &projection);
 	mesh2->Draw(&view, &projection);
@@ -387,13 +388,14 @@ HRESULT Renderer::InitialiseGraphics(void)
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh->LoadObjModel("assets/Spaceship.obj");
 	mesh->SetScale(0.1f);
-	mesh->SetZPos(7.0f);
+	mesh->SetZPos(10.0f);
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh2->LoadObjModel("assets/cube.obj");
 	mesh2->SetScale(0.5f);
-	mesh2->SetXPos(3.0f);
+	mesh2->SetXPos(2.0f);
 	mesh2->SetYPos(3.0f);
+	mesh2->SetZPos(4.0f);
 
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
