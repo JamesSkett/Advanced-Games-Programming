@@ -82,10 +82,19 @@ float Camera::GetZ()
 
 void Camera::CameraFollow(float targetX, float targetY, float targetZ)
 {
-	m_x = targetX;
-	m_y = targetY + 3;
-	m_z = targetZ - 12;
+	//m_x = targetX;
+	//m_y = targetY + 3;
+	m_z = targetZ - 15;
 }
+
+void Camera::LookAt(float targetX, float targetZ)
+{
+	m_camera_rotation = atan2((targetX - m_x), (targetZ - m_z)) * (180 / XM_PI);
+
+	m_dx = sin(XMConvertToRadians(m_camera_rotation));
+	m_dz = cos(XMConvertToRadians(m_camera_rotation));
+}
+
 
 XMMATRIX Camera::GetViewMatrix()
 {

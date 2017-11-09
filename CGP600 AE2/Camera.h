@@ -1,12 +1,8 @@
 #pragma once
 
-//#include <windows.h>
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <dxerr.h>
-//#define _XM_NO_INTRINSICS
-//#define XM_NO_ALIGNMENT
-//#include <xnamath.h>
 
 #include <DirectXMath.h>
 using namespace DirectX;
@@ -17,17 +13,21 @@ public:
 	Camera(float x, float y, float z, float rotation);
 	~Camera();
 
+	//Functions to manipulate the camera
 	void Rotate(float number_of_degrees);
 	void Forward(float distance);
 	void Up(float distance);
 	void Strafe(float distance);
 	void Pitch(float number_of_degrees);
 
+	//get the x,y,z positions of the camera
 	float GetX();
 	float GetY();
 	float GetZ();
 
 	void CameraFollow(float targetX, float targetY, float targetZ);
+
+	void LookAt(float targetX, float targetZ);
 
 	XMMATRIX GetViewMatrix();
 
