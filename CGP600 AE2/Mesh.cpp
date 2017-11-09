@@ -14,6 +14,10 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
 	m_scale = 1.0f;
+
+	m_dx = sin(XMConvertToRadians(m_xangle));
+	m_dz = cos(XMConvertToRadians(m_zangle));
+	m_dy = tan(XMConvertToRadians(m_yangle));
 }
 
 Mesh::~Mesh()
@@ -115,7 +119,7 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 
 	meshWorld = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 	meshWorld *= XMMatrixScaling(m_scale, m_scale, m_scale);
-	meshWorld *= XMMatrixTranslation(m_x, m_y, m_z);
+	meshWorld *= XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
@@ -248,21 +252,39 @@ void Mesh::UpdateZPos(float distance)
 void Mesh::UpdateXAngle(float angle)
 {
 	m_xangle += angle;
+
+	m_dx = sin(XMConvertToRadians(m_yangle));
+	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dz = cos(XMConvertToRadians(m_yangle));
+	
 }
 
 void Mesh::UpdateYAngle(float angle)
 {
 	m_yangle += angle;
+
+	m_dx = sin(XMConvertToRadians(m_yangle));
+	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dz = cos(XMConvertToRadians(m_yangle));
 }
 
 void Mesh::UpdateZAngle(float angle)
 {
 	m_zangle += angle;
+
+	//m_dz = tan(XMConvertToRadians(m_zangle));
 }
 
 void Mesh::UpdateScale(float scale)
 {
 	m_scale += scale;
+}
+
+void Mesh::MoveForward(float speed)
+{
+	m_x += m_dx * speed;
+	//m_y += m_dy * speed;
+	m_z += m_dz * speed;
 }
 
 void Mesh::Lookat_XZ(float targetX, float targetY, float targetZ)

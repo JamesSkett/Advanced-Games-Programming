@@ -1,4 +1,5 @@
 #pragma once
+//DirectX includes
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <dxerr.h>
@@ -6,7 +7,7 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
-#include <vector>
+//My class includes
 #include "objfilemodel.h"
 
 struct MODEL_CONSTANT_BUFFER
@@ -20,12 +21,16 @@ struct MODEL_CONSTANT_BUFFER
 class Mesh
 {
 public:
+	//Constructor uses the device and context from the renderer class
 	Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext);
 	~Mesh();
 
+	//loads the mesh object
 	int LoadObjModel(char* fileName);
 
+	//draws the mesh
 	void Draw(XMMATRIX* view, XMMATRIX* projection);
+	//adds a texture to the mesh
 	void AddTexture(char* fileName);
 
 	//Setters
@@ -55,9 +60,14 @@ public:
 	void UpdateZAngle(float angle);
 	void UpdateScale(float scale);
 
+	//moves the object in the direction its facing
+	void MoveForward(float speed);
+
+	//Makes the mesh face the target points
 	void Lookat_XZ(float targetX, float targetY, float targetZ);
 
 private:
+	//Variables used to initialise graphics
 	ID3D11Device*        m_pD3D11Device;
 	ID3D11DeviceContext* m_pImmediateContext;
 
@@ -70,9 +80,12 @@ private:
 	ID3D11ShaderResourceView* m_pTexture;
 	ID3D11SamplerState* m_pSampler0;
 
+	//lighting variables
 	XMVECTOR m_directional_light_shines_from;
 	XMVECTOR m_directional_light_colour;
 	XMVECTOR m_ambient_light_colour;
+
+	float m_dx, m_dy, m_dz;
 
 	float m_x, m_y, m_z;
 	float m_xangle, m_zangle, m_yangle;
