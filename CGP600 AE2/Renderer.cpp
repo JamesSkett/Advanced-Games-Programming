@@ -35,7 +35,7 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 	
 	// Create window
 	m_hInst = hInstance;
-	RECT rc = { 0, 0, 640, 480 };
+	RECT rc = { 0, 0, 1920, 1080 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	m_hWnd = CreateWindow(Name, m_GameName, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left,
@@ -290,24 +290,18 @@ void Renderer::RenderFrame(void)
 
 		}
 
-		if (player1->GetState().Gamepad.sThumbRX > 20000)
+		if ((rightSticValY > 10) || (rightSticValY < -10))
 		{
-			camera->Rotate(0.01f);
+
+			camera->Pitch(rightSticValY / 1000.0f);
+
 		}
 
-		if (player1->GetState().Gamepad.sThumbRX < -20000)
+		if ((rightSticValX > 10) || (rightSticValX < -10))
 		{
-			camera->Rotate(-0.01f);
-		}
 
-		if (player1->GetState().Gamepad.sThumbRY > 20000)
-		{
-			camera->Pitch(0.003f);
-		}
+			camera->Rotate(rightSticValX / 1000.0f);
 
-		if (player1->GetState().Gamepad.sThumbRY < -20000)
-		{
-			camera->Pitch(-0.003f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)

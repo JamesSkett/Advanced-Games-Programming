@@ -13,7 +13,7 @@ Camera::Camera(float x, float y, float z, float rotation)
 
 	m_dx = sin(XMConvertToRadians(m_camera_rotation));
 	m_dz = cos(XMConvertToRadians(m_camera_rotation));
-	m_dy = tan(XMConvertToRadians(m_camera_rotation));
+	m_dy = sin(XMConvertToRadians(m_camera_rotation));
 
 }
 
@@ -58,7 +58,7 @@ void Camera::Pitch(float number_of_degrees)
 {
 	m_camera_rotation += number_of_degrees;
 
-	m_dy = tan(XMConvertToRadians(m_camera_rotation));
+	m_dy = sin(XMConvertToRadians(m_camera_rotation));
 	m_dz = cos(XMConvertToRadians(m_camera_rotation));
 	
 	m_up = XMVector3Cross(m_right, m_lookat);
