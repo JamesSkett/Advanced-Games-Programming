@@ -393,7 +393,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
-	mesh2->AddTexture("assets/texture.bmp");
+	mesh2->AddTexture("assets/gun_d.bmp");
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
