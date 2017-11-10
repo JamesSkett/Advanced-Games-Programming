@@ -90,5 +90,10 @@ private:
 	float m_x, m_y, m_z;
 	float m_xangle, m_zangle, m_yangle;
 	float m_scale;
+
+	float m_bounding_sphere_centre_x, m_bounding_sphere_centre_y, m_bounding_sphere_centre_z;
+	float m_bounding_spherer_radius;
+
+	void CalculateModelCentrePoint();
 };
 

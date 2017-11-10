@@ -18,6 +18,7 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_dx = sin(XMConvertToRadians(m_xangle));
 	m_dz = cos(XMConvertToRadians(m_zangle));
 	m_dy = tan(XMConvertToRadians(m_yangle));
+
 }
 
 Mesh::~Mesh()
@@ -40,6 +41,8 @@ int Mesh::LoadObjModel(char* fileName)
 {
 	
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
+
+	CalculateModelCentrePoint();
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
@@ -294,6 +297,57 @@ void Mesh::Lookat_XZ(float targetX, float targetY, float targetZ)
 	float xzDiff = sqrt(pow(m_x, 2) + pow(targetZ, 2));
 
 	m_xangle = -atan2((targetY - m_y), xzDiff) * (180 / XM_PI);
+}
+
+void Mesh::CalculateModelCentrePoint()
+{
+	float maxPosX = m_pObject->vertices[0].Pos.x;
+	float minPosX = m_pObject->vertices[0].Pos.x;
+
+	float maxPosY = m_pObject->vertices[0].Pos.y;
+	float minPosY = m_pObject->vertices[0].Pos.y;
+
+	float maxPosZ = m_pObject->vertices[0].Pos.z;
+	float minPosZ = m_pObject->vertices[0].Pos.z;
+
+
+	for (int i = 0; i < m_pObject->numverts; i++)
+	{
+		if (m_pObject->vertices[i].Pos.x > maxPosX)
+		{
+			maxPosX = m_pObject->vertices[i].Pos.x;
+		}
+
+		if (m_pObject->vertices[i].Pos.x < minPosX)
+		{
+			minPosX = m_pObject->vertices[i].Pos.x;
+		}
+
+		if (m_pObject->vertices[i].Pos.y > maxPosY)
+		{
+			maxPosY = m_pObject->vertices[i].Pos.y;
+		}
+
+		if (m_pObject->vertices[i].Pos.y < minPosY)
+		{
+			minPosY = m_pObject->vertices[i].Pos.y;
+		}
+
+		if (m_pObject->vertices[i].Pos.z > maxPosZ)
+		{
+			maxPosZ = m_pObject->vertices[i].Pos.z;
+		}
+
+		if (m_pObject->vertices[i].Pos.z < minPosZ)
+		{
+			minPosZ = m_pObject->vertices[i].Pos.z;
+		}
+	}
+
+	m_bounding_sphere_centre_x = (maxPosX + minPosX) / 2;
+	m_bounding_sphere_centre_y = (maxPosY + minPosY) / 2;
+	m_bounding_sphere_centre_z = (maxPosZ + minPosZ) / 2;
+
 }
 
 
