@@ -279,69 +279,69 @@ void Renderer::RenderFrame(void)
 		if ((leftSticValY > 10) || (leftSticValY < -10))
 		{
 			
-			mesh->UpdateXAngle(leftSticValY / 1000.0f);
+			mesh->UpdateXAngle(leftSticValY / 10.0f);
 		
 		}
 
 		if ((leftSticValX > 10) || (leftSticValX < -10))
 		{
 
-			mesh->UpdateYAngle(leftSticValX / 1000.0f);
+			mesh->UpdateYAngle(leftSticValX / 10.0f);
 
 		}
 
 		if ((rightSticValY > 10) || (rightSticValY < -10))
 		{
 
-			camera->Pitch(rightSticValY / 1000.0f);
+			camera->Pitch(rightSticValY / 10.0f);
 
 		}
 
 		if ((rightSticValX > 10) || (rightSticValX < -10))
 		{
 
-			camera->Rotate(rightSticValX / 1000.0f);
+			camera->Rotate(rightSticValX / 10.0f);
 
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
 		{
-			camera->Up(0.003f);
+			camera->Up(0.3f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_B)
 		{
-			camera->Up(-0.003f);
+			camera->Up(-0.3f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
 		{
-			mesh->MoveForward(0.01f);
+			mesh->MoveForward(0.1f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
 		{
-			mesh->MoveForward(-0.01f);
+			mesh->MoveForward(-0.1f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
 		{
-			mesh->UpdateXPos(0.01f);
+			mesh->UpdateXPos(0.1f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
 		{
-			mesh->UpdateXPos(-0.01f);
+			mesh->UpdateXPos(-0.1f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 		{
-			mesh->UpdateYPos(-0.01f);
+			mesh->UpdateYPos(-0.1f);
 		}
 
 		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_X)
 		{
-			mesh->UpdateYPos(0.01f);
+			mesh->UpdateYPos(0.1f);
 		}
 	}
 	else
@@ -374,7 +374,7 @@ void Renderer::RenderFrame(void)
 
 
 	// Display what has just been rendered
-	m_pSwapChain->Present(0, 0);
+	m_pSwapChain->Present(1, 0);
 }
 
 HRESULT Renderer::InitialiseGraphics(void)
@@ -385,8 +385,8 @@ HRESULT Renderer::InitialiseGraphics(void)
 	mesh->SetZPos(10.0f);
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh2->LoadObjModel("assets/cube.obj");
-	mesh2->SetScale(0.5f);
+	mesh2->LoadObjModel("assets/AK47.obj");
+	mesh2->SetScale(0.2f);
 	mesh2->SetXPos(2.0f);
 	mesh2->SetYPos(3.0f);
 	mesh2->SetZPos(4.0f);
