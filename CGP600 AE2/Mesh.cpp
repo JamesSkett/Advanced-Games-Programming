@@ -13,7 +13,7 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_xangle = 0.0f;
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
-	m_scale = 1.0f;
+	m_scale = 0.1f;
 
 	m_dx = sin(XMConvertToRadians(m_xangle));
 	m_dz = cos(XMConvertToRadians(m_zangle));
@@ -43,6 +43,7 @@ int Mesh::LoadObjModel(char* fileName)
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
 
 	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
@@ -352,32 +353,26 @@ void Mesh::CalculateModelCentrePoint()
 
 void Mesh::CalculateBoundingSphereRadius()
 {
-	//gets the distance of the first point from the centre point
-	float maxXVertDist = sqrt(pow(m_pObject->vertices[0].Pos.x, 2) + pow(m_bounding_sphere_centre_x, 2));
-	float maxYVertDist = sqrt(pow(m_pObject->vertices[0].Pos.y, 2) + pow(m_bounding_sphere_centre_y, 2));
-	float maxZVertDist = sqrt(pow(m_pObject->vertices[0].Pos.z, 2) + pow(m_bounding_sphere_centre_z, 2));
+	float maxDistance = sqrt((pow(m_pObject->vertices[0].Pos.x - m_bounding_sphere_centre_x, 2)) + 
+							 (pow(m_pObject->vertices[0].Pos.y - m_bounding_sphere_centre_y, 2)) + 
+							 (pow(m_pObject->vertices[0].Pos.z - m_bounding_sphere_centre_z, 2)));
 
-	//loop through all the vertices
+	float currentDistance;
+
 	for (int i = 1; i < m_pObject->numverts; i++)
 	{
-		float currentXVertDist = sqrt(pow(m_pObject->vertices[i].Pos.x, 2) + pow(m_bounding_sphere_centre_x, 2));
-		if (currentXVertDist > maxXVertDist)
-		{
-			maxXVertDist = currentXVertDist;
-		}
+		currentDistance = sqrt((pow(m_pObject->vertices[i].Pos.x - m_bounding_sphere_centre_x, 2)) +
+							   (pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +
+							   (pow(m_pObject->vertices[i].Pos.z - m_bounding_sphere_centre_z, 2)));
 
-		float currentYVertDist = sqrt(pow(m_pObject->vertices[i].Pos.y, 2) + pow(m_bounding_sphere_centre_y, 2));
-		if (currentYVertDist > maxYVertDist)
+		if (currentDistance > maxDistance)
 		{
-			maxYVertDist = currentYVertDist;
-		}
-
-		float currentZVertDist = sqrt(pow(m_pObject->vertices[i].Pos.z, 2) + pow(m_bounding_sphere_centre_z, 2));
-		if (currentZVertDist > maxYVertDist)
-		{
-			maxZVertDist = currentZVertDist;
+			maxDistance = currentDistance;
 		}
 	}
+
+	m_bounding_spherer_radius = maxDistance;
+	
 }
 
 
