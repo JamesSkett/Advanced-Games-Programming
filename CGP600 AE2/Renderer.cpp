@@ -380,20 +380,20 @@ void Renderer::RenderFrame(void)
 HRESULT Renderer::InitialiseGraphics(void)
 {
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/Spaceship.obj");
-	mesh->SetScale(0.1f);
+	mesh->LoadObjModel("assets/Sphere.obj");
+	//mesh->SetScale(0.1f);
 	mesh->SetZPos(10.0f);
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh2->LoadObjModel("assets/AK47.obj");
-	mesh2->SetScale(0.2f);
+	mesh2->LoadObjModel("assets/Sphere.obj");
+	//mesh2->SetScale(0.2f);
 	mesh2->SetXPos(2.0f);
 	mesh2->SetYPos(3.0f);
 	mesh2->SetZPos(4.0f);
 
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
-	mesh2->AddTexture("assets/gun_d.bmp");
+	mesh2->AddTexture("assets/texture.bmp");
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
