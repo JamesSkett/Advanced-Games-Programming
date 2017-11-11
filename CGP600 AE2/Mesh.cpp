@@ -311,7 +311,7 @@ void Mesh::CalculateModelCentrePoint()
 	float minPosZ = m_pObject->vertices[0].Pos.z;
 
 
-	for (int i = 0; i < m_pObject->numverts; i++)
+	for (int i = 1; i < m_pObject->numverts; i++)
 	{
 		if (m_pObject->vertices[i].Pos.x > maxPosX)
 		{
@@ -348,6 +348,36 @@ void Mesh::CalculateModelCentrePoint()
 	m_bounding_sphere_centre_y = (maxPosY + minPosY) / 2;
 	m_bounding_sphere_centre_z = (maxPosZ + minPosZ) / 2;
 
+}
+
+void Mesh::CalculateBoundingSphereRadius()
+{
+	//gets the distance of the first point from the centre point
+	float maxXVertDist = sqrt(pow(m_pObject->vertices[0].Pos.x, 2) + pow(m_bounding_sphere_centre_x, 2));
+	float maxYVertDist = sqrt(pow(m_pObject->vertices[0].Pos.y, 2) + pow(m_bounding_sphere_centre_y, 2));
+	float maxZVertDist = sqrt(pow(m_pObject->vertices[0].Pos.z, 2) + pow(m_bounding_sphere_centre_z, 2));
+
+	//loop through all the vertices
+	for (int i = 1; i < m_pObject->numverts; i++)
+	{
+		float currentXVertDist = sqrt(pow(m_pObject->vertices[i].Pos.x, 2) + pow(m_bounding_sphere_centre_x, 2));
+		if (currentXVertDist > maxXVertDist)
+		{
+			maxXVertDist = currentXVertDist;
+		}
+
+		float currentYVertDist = sqrt(pow(m_pObject->vertices[i].Pos.y, 2) + pow(m_bounding_sphere_centre_y, 2));
+		if (currentYVertDist > maxYVertDist)
+		{
+			maxYVertDist = currentYVertDist;
+		}
+
+		float currentZVertDist = sqrt(pow(m_pObject->vertices[i].Pos.z, 2) + pow(m_bounding_sphere_centre_z, 2));
+		if (currentZVertDist > maxYVertDist)
+		{
+			maxZVertDist = currentZVertDist;
+		}
+	}
 }
 
 

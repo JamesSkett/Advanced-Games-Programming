@@ -95,5 +95,6 @@ private:
 	float m_bounding_spherer_radius;
 
 	void CalculateModelCentrePoint();
+	void CalculateBoundingSphereRadius();
 };
 
