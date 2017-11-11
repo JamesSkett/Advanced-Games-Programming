@@ -369,6 +369,8 @@ void Renderer::RenderFrame(void)
 	mesh->Draw(&view, &projection);
 	mesh2->Draw(&view, &projection);
 
+	bool isColliding = mesh->CheckCollision(mesh2);
+
 	// Select which primitive type to use //03-01
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -381,12 +383,12 @@ HRESULT Renderer::InitialiseGraphics(void)
 {
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh->LoadObjModel("assets/Sphere.obj");
-	//mesh->SetScale(0.1f);
+	mesh->SetScale(0.1f);
 	mesh->SetZPos(10.0f);
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
-	//mesh2->SetScale(0.2f);
+	mesh2->SetScale(0.2f);
 	mesh2->SetXPos(2.0f);
 	mesh2->SetYPos(3.0f);
 	mesh2->SetZPos(4.0f);
