@@ -50,6 +50,7 @@ public:
 	float GetYAndle();
 	float GetZAngle();
 	float GetScale();
+	float GetBoundingSphereRadius();
 
 	//use these to move scale and rotate object
 	void UpdateXPos(float distance);
@@ -59,12 +60,16 @@ public:
 	void UpdateYAngle(float angle);
 	void UpdateZAngle(float angle);
 	void UpdateScale(float scale);
+	XMVECTOR GetBoundingSphereWorldSpacePosition();
 
 	//moves the object in the direction its facing
 	void MoveForward(float speed);
 
 	//Makes the mesh face the target points
 	void Lookat_XZ(float targetX, float targetY, float targetZ);
+
+
+	bool CheckCollision(Mesh* targetMesh);
 
 private:
 	//Variables used to initialise graphics
@@ -92,7 +97,7 @@ private:
 	float m_scale;
 
 	float m_bounding_sphere_centre_x, m_bounding_sphere_centre_y, m_bounding_sphere_centre_z;
-	float m_bounding_spherer_radius;
+	float m_bounding_sphere_radius;
 
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();

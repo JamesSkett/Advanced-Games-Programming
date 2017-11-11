@@ -13,7 +13,7 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_xangle = 0.0f;
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
-	m_scale = 0.1f;
+	m_scale = 0.5f;
 
 	m_dx = sin(XMConvertToRadians(m_xangle));
 	m_dz = cos(XMConvertToRadians(m_zangle));
@@ -238,6 +238,11 @@ float Mesh::GetScale()
 	return m_scale;
 }
 
+float Mesh::GetBoundingSphereRadius()
+{
+	return m_bounding_sphere_radius * m_scale;
+}
+
 void Mesh::UpdateXPos(float distance)
 {
 	m_x += distance;
@@ -298,6 +303,53 @@ void Mesh::Lookat_XZ(float targetX, float targetY, float targetZ)
 	float xzDiff = sqrt(pow(m_x, 2) + pow(targetZ, 2));
 
 	m_xangle = -atan2((targetY - m_y), xzDiff) * (180 / XM_PI);
+}
+
+XMVECTOR Mesh::GetBoundingSphereWorldSpacePosition()
+{
+	XMMATRIX world;
+
+	world = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
+
+	XMVECTOR offset;
+
+	offset = XMVectorSet(m_bounding_sphere_centre_x, m_bounding_sphere_centre_y, m_bounding_sphere_centre_z, 0.0f);
+
+	offset = XMVector3Transform(offset, world);
+
+	return offset;
+}
+
+bool Mesh::CheckCollision(Mesh * targetMesh)
+{
+	if (this == targetMesh)
+		return false;
+
+	XMVECTOR sphere1CentrePos = GetBoundingSphereWorldSpacePosition();
+	XMVECTOR sphere2CentrePos = targetMesh->GetBoundingSphereWorldSpacePosition();
+
+	float x1 = XMVectorGetX(sphere1CentrePos);
+	float x2 = XMVectorGetX(sphere2CentrePos);
+	float y1 = XMVectorGetY(sphere1CentrePos);
+	float y2 = XMVectorGetY(sphere2CentrePos);
+	float z1 = XMVectorGetZ(sphere1CentrePos);
+	float z2 = XMVectorGetZ(sphere2CentrePos);
+
+	float distBetweenSpheres = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
+
+	float model1Radius = GetBoundingSphereRadius();
+	float model2Radius = targetMesh->GetBoundingSphereRadius();
+
+	float sumOfRadii = model1Radius + model2Radius;
+
+	if (distBetweenSpheres < sumOfRadii)
+	{
+		return true;
+	}
+	else 
+		return false;
 }
 
 void Mesh::CalculateModelCentrePoint()
@@ -371,7 +423,7 @@ void Mesh::CalculateBoundingSphereRadius()
 		}
 	}
 
-	m_bounding_spherer_radius = maxDistance;
+	m_bounding_sphere_radius = maxDistance;
 	
 }
 
