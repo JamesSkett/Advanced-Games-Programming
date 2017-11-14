@@ -39,7 +39,7 @@ Mesh::~Mesh()
 
 int Mesh::LoadObjModel(char* fileName)
 {
-	
+
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
 
 	CalculateModelCentrePoint();
@@ -128,7 +128,6 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
 	model_cb_values.WorldViewProjection = meshWorld * (*view) * (*projection);
-	//model_cb_values.World = XMMatrixTranspose(meshWorld);
 
 
 	transpose = XMMatrixTranspose(meshWorld); // model world matrix
@@ -265,7 +264,7 @@ void Mesh::UpdateXAngle(float angle)
 	m_dx = sin(XMConvertToRadians(m_yangle));
 	//m_dy = atan(XMConvertToRadians(m_xangle));
 	m_dz = cos(XMConvertToRadians(m_yangle));
-	
+
 }
 
 void Mesh::UpdateYAngle(float angle)
@@ -344,11 +343,11 @@ bool Mesh::CheckCollision(Mesh * targetMesh)
 
 	float sumOfRadii = model1Radius + model2Radius;
 
-	if (distBetweenSpheres < sumOfRadii)
+	if (distBetweenSpheres <= sumOfRadii)
 	{
 		return true;
 	}
-	else 
+	else
 		return false;
 }
 
@@ -405,17 +404,17 @@ void Mesh::CalculateModelCentrePoint()
 
 void Mesh::CalculateBoundingSphereRadius()
 {
-	float maxDistance = sqrt((pow(m_pObject->vertices[0].Pos.x - m_bounding_sphere_centre_x, 2)) + 
-							 (pow(m_pObject->vertices[0].Pos.y - m_bounding_sphere_centre_y, 2)) + 
-							 (pow(m_pObject->vertices[0].Pos.z - m_bounding_sphere_centre_z, 2)));
+	float maxDistance = sqrt((pow(m_pObject->vertices[0].Pos.x - m_bounding_sphere_centre_x, 2)) +
+		(pow(m_pObject->vertices[0].Pos.y - m_bounding_sphere_centre_y, 2)) +
+		(pow(m_pObject->vertices[0].Pos.z - m_bounding_sphere_centre_z, 2)));
 
 	float currentDistance;
 
 	for (int i = 1; i < m_pObject->numverts; i++)
 	{
 		currentDistance = sqrt((pow(m_pObject->vertices[i].Pos.x - m_bounding_sphere_centre_x, 2)) +
-							   (pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +
-							   (pow(m_pObject->vertices[i].Pos.z - m_bounding_sphere_centre_z, 2)));
+			(pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +
+			(pow(m_pObject->vertices[i].Pos.z - m_bounding_sphere_centre_z, 2)));
 
 		if (currentDistance > maxDistance)
 		{
@@ -424,7 +423,7 @@ void Mesh::CalculateBoundingSphereRadius()
 	}
 
 	m_bounding_sphere_radius = maxDistance;
-	
+
 }
 
 
