@@ -32,7 +32,7 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 	wcex.lpszClassName = Name;
 
 	if (!RegisterClassEx(&wcex)) return E_FAIL;
-	
+
 	// Create window
 	m_hInst = hInstance;
 	RECT rc = { 0, 0, 1920, 1080 };
@@ -231,7 +231,7 @@ void Renderer::ShutdownD3D()
 		delete mesh;
 		mesh = nullptr;
 	}
-	
+
 	if (mesh2)
 	{
 		delete mesh2;
@@ -250,7 +250,7 @@ void Renderer::ShutdownD3D()
 	if (m_pPixelShader)  m_pPixelShader->Release();
 	if (m_pTexture0)     m_pTexture0->Release();
 	if (m_pSampler0)     m_pSampler0->Release();
-		
+
 	if (m_pSwapChain)        m_pSwapChain->Release();
 	if (m_pConstantBuffer0)  m_pConstantBuffer0->Release();
 	if (m_pImmediateContext) m_pImmediateContext->Release();
@@ -278,9 +278,9 @@ void Renderer::RenderFrame(void)
 	{
 		if ((leftSticValY > 10) || (leftSticValY < -10))
 		{
-			
+
 			mesh->UpdateXAngle(leftSticValY / 10.0f);
-		
+
 		}
 
 		if ((leftSticValX > 10) || (leftSticValX < -10))
