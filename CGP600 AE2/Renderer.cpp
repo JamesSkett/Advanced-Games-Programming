@@ -64,7 +64,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
-	case WM_KEYDOWN:
+	/*case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{
 			DestroyWindow(m_hWnd);
@@ -93,7 +93,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		else if (wParam == VK_RIGHT)
 		{
 			Renderer::camera->Rotate(-2.0f);
-		}
+		}*/
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -244,6 +244,14 @@ void Renderer::ShutdownD3D()
 		camera = nullptr;
 	}
 
+	if (m_keyboard_device)
+	{
+		m_keyboard_device->Unacquire();
+		m_keyboard_device->Release();
+	}
+
+	if (m_direct_input) m_direct_input->Release();
+
 	if (m_pVertexBuffer) m_pVertexBuffer->Release();
 	if (m_pInputLayout)  m_pInputLayout->Release();
 	if (m_pVertexShader) m_pVertexShader->Release();
@@ -266,6 +274,10 @@ void Renderer::RenderFrame(void)
 	m_pImmediateContext->ClearRenderTargetView(m_pBackBufferRTView, rgba_clear_colour);
 
 	m_pImmediateContext->ClearDepthStencilView(m_pzBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	ReadInputState();
+
+	GetKeyboardInput();
 
 	float leftSticValY = player1->GetState().Gamepad.sThumbLY / 1000.0f;
 	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 1000.0f;
@@ -400,4 +412,63 @@ HRESULT Renderer::InitialiseGraphics(void)
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
 	return S_OK;
+}
+
+HRESULT Renderer::InitialiseInput()
+{
+	HRESULT hr;
+	ZeroMemory(m_keyboard_keys_state, sizeof(m_keyboard_keys_state));
+
+	hr = DirectInput8Create(m_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_direct_input, NULL);
+	if (FAILED(hr)) return hr;
+
+	hr = m_direct_input->CreateDevice(GUID_SysKeyboard, &m_keyboard_device, NULL);
+	if (FAILED(hr)) return hr;
+
+	hr = m_keyboard_device->SetDataFormat(&c_dfDIKeyboard);
+	if (FAILED(hr)) return hr;
+
+	hr = m_keyboard_device->SetCooperativeLevel(m_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	hr = m_keyboard_device->Acquire();
+	if (FAILED(hr)) return hr;
+
+
+	return S_OK;
+}
+
+void Renderer::ReadInputState()
+{
+	HRESULT hr;
+
+	hr = m_keyboard_device->GetDeviceState(sizeof(m_keyboard_keys_state), (LPVOID)&m_keyboard_keys_state);
+
+	if (FAILED(hr))
+	{
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			m_keyboard_device->Acquire();
+		}
+	}
+}
+
+bool Renderer::IsKeyPressed(unsigned char DI_keycode)
+{
+	return m_keyboard_keys_state[DI_keycode] & 0x80;
+}
+
+void Renderer::GetKeyboardInput()
+{
+	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(m_hWnd);
+
+	if (IsKeyPressed(DIK_W))
+	{
+		mesh->UpdateZPos(0.5f);
+	}
+
+	if (IsKeyPressed(DIK_S))
+	{
+		mesh->UpdateZPos(-0.5f);
+	}
 }

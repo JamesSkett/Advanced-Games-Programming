@@ -28,6 +28,12 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		return 0;
 	}
 
+	if (FAILED(renderer->InitialiseInput()))
+	{
+		DXTRACE_MSG("Failed to create Window");
+		return 0;
+	}
+
 	if (FAILED(renderer->InitialiseD3D()))
 	{
 		DXTRACE_MSG("Failed to create Device");

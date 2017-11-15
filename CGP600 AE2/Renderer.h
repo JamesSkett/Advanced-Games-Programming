@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <dxerr.h>
+#include <dinput.h>
 //#define _XM_NO_INTRINSICS
 //#define XM_NO_ALIGNMENT
 //#include <xnamath.h>
@@ -26,12 +27,16 @@ public:
 	void RenderFrame(void);
 	HRESULT InitialiseGraphics(void);
 
+	HRESULT InitialiseInput();
+	void ReadInputState();
+	bool IsKeyPressed(unsigned char DI_keycode);
+
+	void GetKeyboardInput();
+
 	static Camera* camera;
 	
 	Mesh* mesh;
 	Mesh* mesh2;
-
-	void CreateMesh(char* fileName);
 
 private:
 	
@@ -65,6 +70,9 @@ private:
 
 	CXBOXController* player1 = new CXBOXController(1);
 
+	IDirectInput8* m_direct_input;
+	IDirectInputDevice8* m_keyboard_device;
+	unsigned char m_keyboard_keys_state[256];
 
 
 	
