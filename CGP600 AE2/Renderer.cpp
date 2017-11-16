@@ -27,7 +27,7 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
 	wcex.hInstance = hInstance;
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hCursor = LoadCursor(NULL, IDC_CROSS);
 	//   wcex.hbrBackground = (HBRUSH )( COLOR_WINDOW + 1); // Needed for non-D3D apps
 	wcex.lpszClassName = Name;
 
@@ -366,22 +366,25 @@ void Renderer::RenderFrame(void)
 
 	// RENDER HERE
 
-	XMMATRIX projection, view;
+	XMMATRIX identity, projection, view;
 
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 640.0f / 480.0f, 1.0f, 100.0f);
+	identity = XMMatrixIdentity();
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 1.0f, 100.0f);
 	view = camera->GetViewMatrix();
 
 	//mesh->SetYAngle(degrees2);
 	//mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
-	mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
+	//mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 
 	//camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 	//camera->LookAt(mesh->GetXPos(), mesh->GetZPos());
 
-	mesh->Draw(&view, &projection);
-	mesh2->Draw(&view, &projection);
+	//mesh->Draw(&view, &projection);
+	//mesh2->Draw(&view, &projection);
 
-	bool isColliding = mesh->CheckCollision(mesh2);
+	//bool isColliding = mesh->CheckCollision(mesh2);
+
+	g_root_node->Execute(&identity, &view, &projection);
 
 	// Select which primitive type to use //03-01
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -394,20 +397,31 @@ void Renderer::RenderFrame(void)
 HRESULT Renderer::InitialiseGraphics(void)
 {
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/Sphere.obj");
-	mesh->SetScale(0.1f);
-	mesh->SetZPos(10.0f);
+	mesh->LoadObjModel("assets/Spaceship.obj");
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
-	mesh2->SetScale(0.2f);
-	mesh2->SetXPos(2.0f);
-	mesh2->SetYPos(3.0f);
-	mesh2->SetZPos(4.0f);
 
+	//mesh3 = new Mesh(m_pD3DDevice, m_pImmediateContext);
+	//mesh3->LoadObjModel("asstets/cube.obj");
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
 	mesh2->AddTexture("assets/texture.bmp");
+	//mesh3->AddTexture("assets/texture.bmp");
+
+	g_root_node = new Scene_Node();
+	g_node1 = new Scene_Node();
+	g_node2 = new Scene_Node();
+	g_node3 = new Scene_Node();
+
+	g_node1->SetModel(mesh);
+	g_node2->SetModel(mesh2);
+	g_node3->SetModel(mesh);
+
+	g_root_node->AddChildNode(g_node1);
+	g_node1->AddChildNode(g_node2);
+	g_node2->AddChildNode(g_node3);
+
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
@@ -464,11 +478,21 @@ void Renderer::GetKeyboardInput()
 
 	if (IsKeyPressed(DIK_W))
 	{
-		mesh->UpdateZPos(0.5f);
+		g_node1->SetZPos(5.5f);
 	}
 
 	if (IsKeyPressed(DIK_S))
 	{
-		mesh->UpdateZPos(-0.5f);
+		g_node2->SetZPos(2.5f);
+	}
+
+	if (IsKeyPressed(DIK_UP))
+	{
+		g_node1->SetYAngle(45.0f);
+	}
+
+	if (IsKeyPressed(DIK_DOWN))
+	{
+		g_node2->SetYAngle(-45.0f);
 	}
 }

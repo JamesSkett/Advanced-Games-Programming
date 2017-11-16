@@ -14,6 +14,7 @@ using namespace DirectX;
 #include "CXBOXController.h"
 #include "text2D.h"
 #include "Mesh.h"
+#include "Scene_Node.h"
 
 class Renderer
 {
@@ -37,6 +38,14 @@ public:
 	
 	Mesh* mesh;
 	Mesh* mesh2;
+	//Mesh* mesh3;
+
+	Scene_Node* g_root_node;
+
+	Scene_Node* g_node1;
+	Scene_Node* g_node2;
+	Scene_Node* g_node3;
+
 
 private:
 	
