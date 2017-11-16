@@ -42,8 +42,8 @@ int Mesh::LoadObjModel(char* fileName)
 
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
 
-	CalculateModelCentrePoint();
-	CalculateBoundingSphereRadius();
+	//CalculateModelCentrePoint();
+	//CalculateBoundingSphereRadius();
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
@@ -111,7 +111,7 @@ int Mesh::LoadObjModel(char* fileName)
 	return 0;
 }
 
-void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
+void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 {
 	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 
@@ -119,24 +119,22 @@ void Mesh::Draw(XMMATRIX* view, XMMATRIX* projection)
 
 	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	XMMATRIX meshWorld;
-
-	meshWorld = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
-	meshWorld *= XMMatrixScaling(m_scale, m_scale, m_scale);
-	meshWorld *= XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
+	//world = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle)) * DirectX::XMMatrixRotationY(XMConvertToRadians(m_yangle)) * DirectX::XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	//world *= DirectX::XMMatrixScaling(m_scale, m_scale, m_scale);
+	//world *= DirectX::XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
-	model_cb_values.WorldViewProjection = meshWorld * (*view) * (*projection);
+	model_cb_values.WorldViewProjection = (*world) * (*view) * (*projection);
 
 
-	transpose = XMMatrixTranspose(meshWorld); // model world matrix
+	transpose = XMMatrixTranspose((*world)); // model world matrix
 
 
 	model_cb_values.directional_light_colour = m_directional_light_colour;
 	model_cb_values.ambient_light_colour = m_ambient_light_colour;
-	model_cb_values.directional_light_vector = XMVector3Transform(m_directional_light_shines_from, transpose);
-	model_cb_values.directional_light_vector = XMVector3Normalize(model_cb_values.directional_light_vector);
+	model_cb_values.directional_light_vector = DirectX::XMVector3Transform(m_directional_light_shines_from, transpose);
+	model_cb_values.directional_light_vector = DirectX::XMVector3Normalize(model_cb_values.directional_light_vector);
 
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
@@ -308,9 +306,9 @@ XMVECTOR Mesh::GetBoundingSphereWorldSpacePosition()
 {
 	XMMATRIX world;
 
-	world = XMMatrixRotationX(XMConvertToRadians(m_xangle)) * XMMatrixRotationY(XMConvertToRadians(m_yangle)) * XMMatrixRotationZ(XMConvertToRadians(m_zangle));
-	world *= XMMatrixScaling(m_scale, m_scale, m_scale);
-	world *= XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
+	world = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle)) * DirectX::XMMatrixRotationY(XMConvertToRadians(m_yangle)) * DirectX::XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	world *= DirectX::XMMatrixScaling(m_scale, m_scale, m_scale);
+	world *= DirectX::XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
 
 	XMVECTOR offset;
 

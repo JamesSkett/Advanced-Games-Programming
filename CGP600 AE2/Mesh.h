@@ -29,7 +29,7 @@ public:
 	int LoadObjModel(char* fileName);
 
 	//draws the mesh
-	void Draw(XMMATRIX* view, XMMATRIX* projection);
+	void Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection);
 	//adds a texture to the mesh
 	void AddTexture(char* fileName);
 
