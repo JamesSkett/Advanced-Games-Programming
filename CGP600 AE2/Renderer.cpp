@@ -412,15 +412,15 @@ HRESULT Renderer::InitialiseGraphics(void)
 	g_root_node = new Scene_Node();
 	g_node1 = new Scene_Node();
 	g_node2 = new Scene_Node();
-	g_node3 = new Scene_Node();
+	//g_node3 = new Scene_Node();
 
 	g_node1->SetModel(mesh);
 	g_node2->SetModel(mesh2);
-	g_node3->SetModel(mesh);
+	//g_node3->SetModel(mesh);
 
 	g_root_node->AddChildNode(g_node1);
 	g_node1->AddChildNode(g_node2);
-	g_node2->AddChildNode(g_node3);
+	//g_node2->AddChildNode(g_node3);
 
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
@@ -478,21 +478,21 @@ void Renderer::GetKeyboardInput()
 
 	if (IsKeyPressed(DIK_W))
 	{
-		g_node1->SetZPos(5.5f);
+		g_node1->UpdateZPos(0.5f);
 	}
 
 	if (IsKeyPressed(DIK_S))
 	{
-		g_node2->SetZPos(2.5f);
+		g_node1->UpdateZPos(-0.5f);
 	}
 
 	if (IsKeyPressed(DIK_UP))
 	{
-		g_node1->SetYAngle(45.0f);
+		g_node2->UpdateZPos(2.0f);
 	}
 
 	if (IsKeyPressed(DIK_DOWN))
 	{
-		g_node2->SetYAngle(-45.0f);
+		g_node2->UpdateZPos(-2.0f);
 	}
 }
