@@ -22,6 +22,7 @@ public:
 	float GetXAngle();
 	float GetYAngle();
 	float GetZAngle();
+	float GetScale();
 
 	//Setters
 	void SetXPos(float x);
@@ -30,6 +31,14 @@ public:
 	void SetXAngle(float xAngle);
 	void SetYAngle(float yAngle);
 	void SetZAngle(float zAngle);
+	void SetScale(float scale);
+
+	void UpdateXPos(float distance);
+	void UpdateYPos(float distance);
+	void UpdateZPos(float distance);
+	void UpdateXangle(float angle);
+	void UpdateYangle(float angle);
+	void UpdateZangle(float angle);
 
 	void SetModel(Mesh* mesh);
 	void AddChildNode(Scene_Node* n);
