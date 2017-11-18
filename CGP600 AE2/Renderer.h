@@ -38,7 +38,7 @@ public:
 	
 	Mesh* mesh;
 	Mesh* mesh2;
-	Mesh* mesh3;
+	//Mesh* mesh3;
 
 	Scene_Node* g_root_node;
 

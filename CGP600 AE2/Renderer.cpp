@@ -64,6 +64,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
+	/*case WM_KEYDOWN:
+		if (wParam == VK_ESCAPE)
+		{
+			DestroyWindow(m_hWnd);
+			return 0;
+		}
+		else if (wParam == 0x41)
+		{
+			Renderer::camera->Strafe(1.0f);
+		}
+		else if (wParam == 0x44)
+		{
+			Renderer::camera->Strafe(-1.0f);
+		}
+		else if (wParam == 0x57)
+		{
+			Renderer::camera->Forward(0.3f);
+		}
+		else if (wParam == 0x53)
+		{
+			Renderer::camera->Forward(-0.3f);
+		}
+		else if (wParam == VK_LEFT)
+		{
+			Renderer::camera->Rotate(2.0f);
+		}
+		else if (wParam == VK_RIGHT)
+		{
+			Renderer::camera->Rotate(-2.0f);
+		}*/
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -346,7 +377,7 @@ void Renderer::RenderFrame(void)
 	//mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
 
 	//camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
-	//camera->LookAt(g_node1->GetXPos(), g_node1->GetZPos());
+	//camera->LookAt(mesh->GetXPos(), mesh->GetZPos());
 
 	//mesh->Draw(&view, &projection);
 	//mesh2->Draw(&view, &projection);
@@ -366,16 +397,16 @@ void Renderer::RenderFrame(void)
 HRESULT Renderer::InitialiseGraphics(void)
 {
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	//mesh->LoadObjModel("assets/Spaceship.obj");
+	mesh->LoadObjModel("assets/Spaceship.obj");
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	//mesh2->LoadObjModel("assets/Sphere.obj");
+	mesh2->LoadObjModel("assets/Sphere.obj");
 
-	mesh3 = new Mesh(m_pD3DDevice, m_pImmediateContext);
+	//mesh3 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	//mesh3->LoadObjModel("asstets/cube.obj");
 
-	//mesh->AddTexture("assets/Spaceship_D.bmp");
-	//mesh2->AddTexture("assets/texture.bmp");
+	mesh->AddTexture("assets/Spaceship_D.bmp");
+	mesh2->AddTexture("assets/texture.bmp");
 	//mesh3->AddTexture("assets/texture.bmp");
 
 	g_root_node = new Scene_Node();
@@ -385,18 +416,12 @@ HRESULT Renderer::InitialiseGraphics(void)
 
 	g_node1->SetModel(mesh);
 	g_node2->SetModel(mesh2);
-	g_node3->SetModel(mesh3);
+	g_node3->SetModel(mesh);
 
 	g_root_node->AddChildNode(g_node1);
 	g_node1->AddChildNode(g_node2);
 	g_node2->AddChildNode(g_node3);
 
-	g_node1->SetXPos(-5.0f);
-	g_node2->SetXPos(15.0f);
-	g_node3->SetZPos(15.0f);
-	g_node1->SetScale(0.3f);
-	g_node2->SetScale(0.3f);
-	g_node3->SetScale(0.3f);
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
@@ -453,26 +478,21 @@ void Renderer::GetKeyboardInput()
 
 	if (IsKeyPressed(DIK_W))
 	{
-		g_node1->UpdateZPos(0.5f);
+		g_node1->SetZPos(5.5f);
 	}
 
 	if (IsKeyPressed(DIK_S))
 	{
-		g_node1->UpdateZPos(-0.5f);
+		g_node2->SetZPos(2.5f);
 	}
 
 	if (IsKeyPressed(DIK_UP))
 	{
-		g_node2->UpdateZPos(1.5f);
+		g_node1->SetYAngle(45.0f);
 	}
 
 	if (IsKeyPressed(DIK_DOWN))
 	{
-		g_node2->UpdateZPos(-1.5f);
-	}
-
-	if (IsKeyPressed(DIK_U))
-	{
-		camera->Up(0.3f);
+		g_node2->SetYAngle(-45.0f);
 	}
 }
