@@ -422,6 +422,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	g_node1->AddChildNode(g_node2);
 	//g_node2->AddChildNode(g_node3);
 
+	g_node1->SetScale(0.02f);
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
