@@ -6,7 +6,7 @@ Scene_Node::Scene_Node()
 {
 	m_pModel = NULL;
 
-	m_x = 0.0f; m_y = 0.0f; m_z = 0.0f;
+	m_x = 0.0f; m_y = 0.0f; m_z = 5.0f;
 	m_xangle = 0.0f; m_yangle = 0.0f; m_zangle = 0.0f;
 	m_scale = 1.0f;
 }
@@ -42,11 +42,6 @@ float Scene_Node::GetZAngle()
 	return m_zangle;
 }
 
-float Scene_Node::GetScale()
-{
-	return m_scale;
-}
-
 //Setters
 void Scene_Node::SetXPos(float x)
 {
@@ -73,32 +68,11 @@ void Scene_Node::SetZAngle(float zAngle)
 	m_zangle = zAngle;
 }
 
-void Scene_Node::SetScale(float scale)
-{
-	m_scale = scale;
-}
-
-void Scene_Node::UpdateXPos(float distance)
-{
-	m_x = +distance;
-}
-
-void Scene_Node::UpdateYPos(float distance)
-{
-	m_y += distance;
-}
-
-void Scene_Node::UpdateZPos(float distance)
-{
-	m_z += distance;
-}
-
 void Scene_Node::SetModel(Mesh * mesh)
 {
 	m_pModel = mesh;
 
-	mesh->LoadObjModel("assets/Spaceship.obj");
-	mesh->AddTexture("assets/Spaceship_D.bmp");
+
 
 }
 
@@ -124,7 +98,7 @@ bool Scene_Node::DetachNode(Scene_Node * n)
 
 void Scene_Node::Execute(XMMATRIX * world, XMMATRIX * view, XMMATRIX * projection)
 {
-	//m_scale = 0.2f;
+	m_scale = 0.2f;
 	//m_z = 5;
 
 	XMMATRIX local_world = DirectX::XMMatrixIdentity();
