@@ -44,7 +44,7 @@ public:
 
 	Scene_Node* g_node1;
 	Scene_Node* g_node2;
-	Scene_Node* g_node3;
+	//Scene_Node* g_node3;
 
 
 private:
