@@ -119,14 +119,14 @@ void Text2D::RenderText(void)
 	int current_char = 0; // keep track of number of characters so far
 
 	// loop through all the added string_2d
-	for(int i=0; i < s2d.size(); i++)
+	for(unsigned int i=0; i < s2d.size(); i++)
 	{
 		float tempx = s2d[i].x;
 		float tempy = s2d[i].y;
 		float temps = s2d[i].size;
 
 		// loop through each character
-		for(int j = 0;j < s2d[i].s.length(); j++)
+		for(unsigned int j = 0;j < s2d[i].s.length(); j++)
 		{
 			// create 6 vertices with given size and xy position
 			vertices[current_char*6].Pos.x = tempx;
@@ -162,17 +162,17 @@ void Text2D::RenderText(void)
 			if(c >= 'a' && c <= 'z') // lowercase
 			{
 				texy= 0.0; // first line
-				texx  = (c-'a') * 1.0 / 26.0; 
+				texx  = (c-'a') * 1.0f / 26.0f; 
 			}
 			else if(c >= 'A' && c <= 'Z') // uppercase
 			{
 				texy= 1.0/NUMLINES; //second line
-				texx  = (c-'A') *1.0 /26.0;
+				texx  = (c-'A') *1.0f /26.0f;
 			}
 			else if(c >= '0' && c <= '9') // numbers
 			{
 				texy=  2.0/NUMLINES; // third line
-				texx  = (c-'0') *1.0 /26.0;
+				texx  = (c-'0') *1.0f /26.0f;
 			}
 			else // add any symbol code here
 			{
@@ -184,16 +184,16 @@ void Text2D::RenderText(void)
 			// set correct texture coordinates for letter
 			vertices[current_char*6].Texture.x = texx;
 			vertices[current_char*6].Texture.y = texy;
-			vertices[current_char*6+1].Texture.x = texx + 1.0 /26.0;
+			vertices[current_char*6+1].Texture.x = texx + 1.0f /26.0f;
 			vertices[current_char*6+1].Texture.y = texy;
-			vertices[current_char*6+2].Texture.x =texx + 1.0 /26.0;
-			vertices[current_char*6+2].Texture.y = texy+1.0/NUMLINES;
+			vertices[current_char*6+2].Texture.x =texx + 1.0f /26.0f;
+			vertices[current_char*6+2].Texture.y = texy+1.0f/NUMLINES;
 			vertices[current_char*6+3].Texture.x = texx;
 			vertices[current_char*6+3].Texture.y = texy;
-			vertices[current_char*6+4].Texture.x = texx + 1.0 /26.0;
-			vertices[current_char*6+4].Texture.y = texy+1.0/NUMLINES;
+			vertices[current_char*6+4].Texture.x = texx + 1.0f /26.0f;
+			vertices[current_char*6+4].Texture.y = texy+1.0f/NUMLINES;
 			vertices[current_char*6+5].Texture.x = texx;
-			vertices[current_char*6+5].Texture.y = texy+1.0/NUMLINES;
+			vertices[current_char*6+5].Texture.y = texy+1.0f/NUMLINES;
 
 			current_char++; 
 			tempx += temps; // position next character along in x 
