@@ -19,7 +19,7 @@ Renderer::~Renderer()
 HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 {
 	// Give your app window your own name
-	char Name[100] = "Hello World\0";
+	char Name[100] = "Space Game\0";
 
 	// Register class
 	WNDCLASSEX wcex = { 0 };
@@ -63,37 +63,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-
-	/*case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE)
-		{
-			DestroyWindow(m_hWnd);
-			return 0;
-		}
-		else if (wParam == 0x41)
-		{
-			Renderer::camera->Strafe(1.0f);
-		}
-		else if (wParam == 0x44)
-		{
-			Renderer::camera->Strafe(-1.0f);
-		}
-		else if (wParam == 0x57)
-		{
-			Renderer::camera->Forward(0.3f);
-		}
-		else if (wParam == 0x53)
-		{
-			Renderer::camera->Forward(-0.3f);
-		}
-		else if (wParam == VK_LEFT)
-		{
-			Renderer::camera->Rotate(2.0f);
-		}
-		else if (wParam == VK_RIGHT)
-		{
-			Renderer::camera->Rotate(-2.0f);
-		}*/
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -213,8 +182,8 @@ HRESULT Renderer::InitialiseD3D()
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = width;
-	viewport.Height = height;
+	viewport.Width = (float)width;
+	viewport.Height = (float)height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -238,10 +207,40 @@ void Renderer::ShutdownD3D()
 		mesh2 = nullptr;
 	}
 
+	if (cameraMesh)
+	{
+		delete cameraMesh;
+		cameraMesh = nullptr;
+	}
+
 	if (camera)
 	{
 		delete camera;
 		camera = nullptr;
+	}
+
+	if (m_root_node)
+	{
+		delete m_root_node;
+		m_root_node = nullptr;
+	}
+
+	if (m_node1)
+	{
+		delete m_node1;
+		m_node1 = nullptr;
+	}
+
+	if (m_node2)
+	{
+		delete m_node2;
+		m_node2 = nullptr;
+	}
+
+	if (m_camera_node)
+	{
+		delete m_camera_node;
+		m_camera_node = nullptr;
 	}
 
 	if (m_keyboard_device)
@@ -279,90 +278,7 @@ void Renderer::RenderFrame(void)
 
 	GetKeyboardInput();
 
-	float leftSticValY = player1->GetState().Gamepad.sThumbLY / 1000.0f;
-	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 1000.0f;
-
-	float rightSticValY = player1->GetState().Gamepad.sThumbRY / 1000.0f;
-	float rightSticValX = player1->GetState().Gamepad.sThumbRX / 1000.0f;
-
-
-	if (player1->IsConnected())
-	{
-		if ((leftSticValY > 10) || (leftSticValY < -10))
-		{
-
-			mesh->UpdateXAngle(leftSticValY / 10.0f);
-
-		}
-
-		if ((leftSticValX > 10) || (leftSticValX < -10))
-		{
-
-			mesh->UpdateYAngle(leftSticValX / 10.0f);
-
-		}
-
-		if ((rightSticValY > 10) || (rightSticValY < -10))
-		{
-
-			camera->Pitch(rightSticValY / 10.0f);
-
-		}
-
-		if ((rightSticValX > 10) || (rightSticValX < -10))
-		{
-
-			camera->Rotate(rightSticValX / 10.0f);
-
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
-		{
-			camera->Up(0.3f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_B)
-		{
-			camera->Up(-0.3f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-		{
-			mesh->MoveForward(0.1f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-		{
-			mesh->MoveForward(-0.1f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-		{
-			mesh->UpdateXPos(0.1f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-		{
-			mesh->UpdateXPos(-0.1f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_Y)
-		{
-			mesh->UpdateYPos(-0.1f);
-		}
-
-		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_X)
-		{
-			mesh->UpdateYPos(0.1f);
-		}
-	}
-	else
-	{
-		std::cout << "\n\tERROR! PLAYER 1 - XBOX 360 Controller Not Found!\n";
-		std::cout << "Press Any Key To Exit.";
-		std::cin.get();
-
-	}
+	
 
 	// RENDER HERE
 
@@ -384,7 +300,9 @@ void Renderer::RenderFrame(void)
 
 	//bool isColliding = mesh->CheckCollision(mesh2);
 
-	g_root_node->Execute(&identity, &view, &projection);
+	m_root_node->Execute(&identity, &view, &projection);
+
+	bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
 
 	// Select which primitive type to use //03-01
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -396,33 +314,43 @@ void Renderer::RenderFrame(void)
 
 HRESULT Renderer::InitialiseGraphics(void)
 {
+	
 	mesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	mesh->LoadObjModel("assets/Spaceship.obj");
+	mesh->LoadObjModel("assets/Sphere.obj");
 
 	mesh2 = new Mesh(m_pD3DDevice, m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
 
-	//mesh3 = new Mesh(m_pD3DDevice, m_pImmediateContext);
-	//mesh3->LoadObjModel("asstets/cube.obj");
+	cameraMesh = new Mesh(m_pD3DDevice, m_pImmediateContext);
+	cameraMesh->LoadObjModel("assets/cube.obj");
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
 	mesh2->AddTexture("assets/texture.bmp");
-	//mesh3->AddTexture("assets/texture.bmp");
+	cameraMesh->AddTexture("assets/texture.bmp");
 
-	g_root_node = new Scene_Node();
-	g_node1 = new Scene_Node();
-	g_node2 = new Scene_Node();
+	m_root_node = new Scene_Node();
+	m_node1 = new Scene_Node();
+	m_node2 = new Scene_Node();
+	m_camera_node = new Scene_Node();
 	//g_node3 = new Scene_Node();
 
-	g_node1->SetModel(mesh);
-	g_node2->SetModel(mesh2);
+	m_node1->SetModel(mesh);
+	m_node2->SetModel(mesh2);
+	m_camera_node->SetModel(cameraMesh);
 	//g_node3->SetModel(mesh);
 
-	g_root_node->AddChildNode(g_node1);
-	g_node1->AddChildNode(g_node2);
+	m_root_node->AddChildNode(m_node1);
+	m_root_node->AddChildNode(m_node2);
+	m_root_node->AddChildNode(m_camera_node);
+	//m_node1->AddChildNode(m_node2);
 	//g_node2->AddChildNode(g_node3);
 
-	g_node1->SetScale(0.02f);
+	m_node1->SetScale(0.1f);
+	m_node2->SetScale(0.1f);
+	m_node1->SetZPos(5.0f);
+	m_node2->SetZPos(5.0f);
+	m_node2->SetXPos(2.0f);
+	m_camera_node->SetScale(0.1f);
 
 	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
 
@@ -479,21 +407,170 @@ void Renderer::GetKeyboardInput()
 
 	if (IsKeyPressed(DIK_W))
 	{
-		g_node1->UpdateZPos(0.5f);
+		m_node1->UpdateZPos(0.5f, m_root_node);
 	}
 
 	if (IsKeyPressed(DIK_S))
 	{
-		g_node1->UpdateZPos(-0.5f);
+		m_node1->UpdateZPos(-0.5f, m_root_node);
 	}
 
 	if (IsKeyPressed(DIK_UP))
 	{
-		g_node2->UpdateZPos(2.0f);
+		camera->Forward(0.3f);
+
+		// set camera node to the position of the camera
+		m_camera_node->SetXPos(camera->GetX());
+		m_camera_node->SetYPos(camera->GetY());
+		m_camera_node->SetZPos(camera->GetZ());
+
+		XMMATRIX identity = XMMatrixIdentity();
+
+		// update tree to reflect new camera position
+		m_root_node->UpdateCollisionTree(&identity, 1.0);
+
+		if (m_camera_node->CheckCollision(m_root_node) == true)
+		{
+			// if there is a collision, restore camera and camera node positions
+			camera->Forward(-0.3f);
+			m_camera_node->SetXPos(camera->GetX()); //15
+			m_camera_node->SetYPos(camera->GetY());//15
+			m_camera_node->SetZPos(camera->GetZ());//15
+
+		}
+
 	}
 
 	if (IsKeyPressed(DIK_DOWN))
 	{
-		g_node2->UpdateZPos(-2.0f);
+		camera->Forward(-0.3f);
+
+		// set camera node to the position of the camera
+		m_camera_node->SetXPos(camera->GetX());
+		m_camera_node->SetYPos(camera->GetY());
+		m_camera_node->SetZPos(camera->GetZ());
+
+		XMMATRIX identity = XMMatrixIdentity();
+
+		// update tree to reflect new camera position
+		m_root_node->UpdateCollisionTree(&identity, 1.0);
+
+		if (m_camera_node->CheckCollision(m_root_node) == true)
+		{
+			// if there is a collision, restore camera and camera node positions
+			camera->Forward(0.3f);
+			m_camera_node->SetXPos(camera->GetX()); //15
+			m_camera_node->SetYPos(camera->GetY());//15
+			m_camera_node->SetZPos(camera->GetZ());//15
+
+		}
+	}
+
+	if (IsKeyPressed(DIK_D))
+	{
+		m_node1->UpdateXPos(0.3f, m_root_node);
+	}
+
+	if (IsKeyPressed(DIK_A))
+	{
+		m_node1->UpdateXPos(-0.3f, m_root_node);
+	}
+
+	if (IsKeyPressed(DIK_RIGHT))
+	{
+		m_node2->UpdateYangle(0.7f);
+	}
+
+	if (IsKeyPressed(DIK_LEFT))
+	{
+		m_node2->UpdateYangle(-0.7f);
+	}
+}
+
+void Renderer::GetControllerInput()
+{
+	float leftSticValY = player1->GetState().Gamepad.sThumbLY / 10000.0f;
+	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 10000.0f;
+
+	float rightSticValY = player1->GetState().Gamepad.sThumbRY / 10000.0f;
+	float rightSticValX = player1->GetState().Gamepad.sThumbRX / 10000.0f;
+
+
+	if (player1->IsConnected())
+	{
+		if ((leftSticValY > 10) || (leftSticValY))
+		{
+
+			mesh->UpdateXAngle(leftSticValY);
+
+		}
+
+		if ((leftSticValX > 10) || (leftSticValX < -10))
+		{
+
+			mesh->UpdateYAngle(leftSticValX);
+
+		}
+
+		if ((rightSticValY > 10) || (rightSticValY < -10))
+		{
+
+			camera->Pitch(rightSticValY);
+
+		}
+
+		if ((rightSticValX > 10) || (rightSticValX < -10))
+		{
+
+			camera->Rotate(rightSticValX);
+
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_A)
+		{
+			camera->Up(0.3f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_B)
+		{
+			camera->Up(-0.3f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+		{
+			mesh->MoveForward(0.1f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+		{
+			mesh->MoveForward(-0.1f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+		{
+			mesh->UpdateXPos(0.1f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+		{
+			mesh->UpdateXPos(-0.1f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		{
+			mesh->UpdateYPos(-0.1f);
+		}
+
+		if (player1->GetState().Gamepad.wButtons & XINPUT_GAMEPAD_X)
+		{
+			mesh->UpdateYPos(0.1f);
+		}
+	}
+	else
+	{
+		printf("\n\tERROR! PLAYER 1 - XBOX 360 Controller Not Found!\n");
+		//std::cout << "Press Any Key To Exit.";
+		//std::cin.get();
+
 	}
 }

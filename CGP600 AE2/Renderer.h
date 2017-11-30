@@ -3,9 +3,7 @@
 #include <d3dx11.h>
 #include <dxerr.h>
 #include <dinput.h>
-//#define _XM_NO_INTRINSICS
-//#define XM_NO_ALIGNMENT
-//#include <xnamath.h>
+
 
 #include <DirectXMath.h>
 using namespace DirectX;
@@ -33,18 +31,11 @@ public:
 	bool IsKeyPressed(unsigned char DI_keycode);
 
 	void GetKeyboardInput();
+	void GetControllerInput();
 
 	static Camera* camera;
 	
-	Mesh* mesh;
-	Mesh* mesh2;
-	//Mesh* mesh3;
-
-	Scene_Node* g_root_node;
-
-	Scene_Node* g_node1;
-	Scene_Node* g_node2;
-	//Scene_Node* g_node3;
+	
 
 
 private:
@@ -83,7 +74,16 @@ private:
 	IDirectInputDevice8* m_keyboard_device;
 	unsigned char m_keyboard_keys_state[256];
 
+	Mesh* mesh;
+	Mesh* mesh2;
+	Mesh* cameraMesh;
 
+	Scene_Node* m_root_node;
+
+	Scene_Node* m_node1;
+	Scene_Node* m_node2;
+	Scene_Node* m_camera_node;
+	//Scene_Node* m_node3;
 	
 };
 
