@@ -78,19 +78,77 @@ void Scene_Node::SetScale(float scale)
 	m_scale = scale;
 }
 
-void Scene_Node::UpdateXPos(float distance)
+bool Scene_Node::UpdateXPos(float distance, Scene_Node* rootNode)
 {
-	m_x = +distance;
+	float old_x = m_x;	// save current state 
+	m_x += distance;		// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_x = old_x;
+
+		return true;
+	}
+
+	return false;
+
 }
 
-void Scene_Node::UpdateYPos(float distance)
+bool Scene_Node::UpdateYPos(float distance, Scene_Node* rootNode)
 {
-	m_y += distance;
+	float old_y = m_y;	// save current state 
+	m_y += distance;		// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_y = old_y;
+
+		return true;
+	}
+
+	return false;
 }
 
-void Scene_Node::UpdateZPos(float distance)
+bool Scene_Node::UpdateZPos(float distance, Scene_Node* rootNode)
 {
-	m_z += distance;
+	float old_z = m_z;	// save current state 
+	m_z += distance;		// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_z = old_z;
+
+		return true;
+	}
+
+	return false;
 }
 
 void Scene_Node::UpdateXangle(float angle)
@@ -120,7 +178,7 @@ void Scene_Node::AddChildNode(Scene_Node * n)
 
 bool Scene_Node::DetachNode(Scene_Node * n)
 {
-	for (int i = 0; i < m_children.size(); i++)
+	for (unsigned int i = 0; i < m_children.size(); i++)
 	{
 		if (n == m_children[i])
 		{
@@ -154,9 +212,119 @@ void Scene_Node::Execute(XMMATRIX * world, XMMATRIX * view, XMMATRIX * projectio
 	if (m_pModel) m_pModel->Draw(&local_world, view, projection);
 
 	// traverse all child nodes, passing in the concatenated world matrix
-	for (int i = 0; i< m_children.size(); i++)
+	for (unsigned int i = 0; i< m_children.size(); i++)
 	{
 		m_children[i]->Execute(&local_world, view, projection);
 	}
 
+	//UpdateCollisionTree(world, m_scale);
+
+}
+
+XMVECTOR Scene_Node::GetWorldCentrePos()
+{
+	return XMVectorSet(m_world_centre_x, m_world_centre_y, m_world_centre_z, 0.0f);
+}
+
+void Scene_Node::UpdateCollisionTree(XMMATRIX* world, float scale)
+{
+	// the local_world matrix will be used to calculate the local transformations for this node
+	XMMATRIX local_world = XMMatrixIdentity();
+
+	local_world = XMMatrixRotationX(XMConvertToRadians(m_xangle));
+	local_world *= XMMatrixRotationY(XMConvertToRadians(m_yangle));
+	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+
+	local_world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+
+	local_world *= XMMatrixTranslation(m_x, m_y, m_z);
+
+	// the local matrix is multiplied by the passed in world matrix that contains the concatenated
+	// transformations of all parent nodes so that this nodes transformations are relative to those
+	local_world *= *world;
+
+	// calc the world space scale of this object, is needed to calculate the  
+	// correct bounding sphere radius of an object in a scaled hierarchy
+	m_world_scale = scale * m_scale;
+
+	XMVECTOR v;
+	if (m_pModel)
+	{
+		v = XMVectorSet(m_pModel->GetBoundingSphere_x(),
+			m_pModel->GetBoundingSphere_y(),
+			m_pModel->GetBoundingSphere_z(), 0.0);
+	}
+	else v = XMVectorSet(0, 0, 0, 0); // no model, default to 0
+
+									  // find and store world space bounding sphere centre
+	v = XMVector3Transform(v, local_world);
+	m_world_centre_x = XMVectorGetX(v);
+	m_world_centre_y = XMVectorGetY(v);
+	m_world_centre_z = XMVectorGetZ(v);
+
+	// traverse all child nodes, passing in the concatenated world matrix and scale
+	for (unsigned int i = 0; i< m_children.size(); i++)
+	{
+		m_children[i]->UpdateCollisionTree(&local_world, m_world_scale);
+	}
+
+
+
+}
+
+bool Scene_Node::CheckCollision(Scene_Node* compare_tree)
+{
+	return CheckCollision(compare_tree, this);
+}
+
+
+bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTreeRoot)
+{
+	//check to see if root of tree being compared is same as root node of     
+	//object tree being checked
+	// i.e. stop object node and children being checked against each other
+	if (objectTreeRoot == compareTree) return false;
+
+	if (m_pModel && compareTree->m_pModel)
+	{
+		XMVECTOR v1 = GetWorldCentrePos();
+		XMVECTOR v2 = compareTree->GetWorldCentrePos();
+		XMVECTOR vdiff = v1 - v2;
+
+		float x1 = XMVectorGetX(v1);
+		float x2 = XMVectorGetX(v2);
+		float y1 = XMVectorGetY(v1);
+		float y2 = XMVectorGetY(v2);
+		float z1 = XMVectorGetZ(v1);
+		float z2 = XMVectorGetZ(v2);
+
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		float dz = z1 - z2;
+
+		if (sqrt(dx*dx + dy*dy + dz*dz) <
+			(compareTree->m_pModel->GetBoundingSphereRadius() *
+				compareTree->m_world_scale) +
+				(this->m_pModel->GetBoundingSphereRadius() * m_world_scale))
+		{
+			return true;
+		}
+
+	}
+
+	for (unsigned int i = 0; i< compareTree->m_children.size(); i++)
+	{
+		//check for collsion against all compared tree child nodes 
+		if (CheckCollision(compareTree->m_children[i], objectTreeRoot))
+			return true;
+	}
+
+	for (unsigned int i = 0; i< m_children.size(); i++)
+	{
+		if (m_children[i]->CheckCollision(compareTree, objectTreeRoot))
+			return true;
+	}
+
+
+	return false;
 }

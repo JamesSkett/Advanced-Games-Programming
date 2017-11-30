@@ -33,9 +33,9 @@ public:
 	void SetZAngle(float zAngle);
 	void SetScale(float scale);
 
-	void UpdateXPos(float distance);
-	void UpdateYPos(float distance);
-	void UpdateZPos(float distance);
+	bool UpdateXPos(float distance, Scene_Node* rootNode);
+	bool UpdateYPos(float distance, Scene_Node* rootNode);
+	bool UpdateZPos(float distance, Scene_Node* rootNode);
 	void UpdateXangle(float angle);
 	void UpdateYangle(float angle);
 	void UpdateZangle(float angle);
@@ -47,6 +47,12 @@ public:
 
 	void Execute(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection);
 
+	XMVECTOR GetWorldCentrePos();
+	void UpdateCollisionTree(XMMATRIX* world, float scale);
+
+	bool CheckCollision(Scene_Node* compareTree);
+	bool CheckCollision(Scene_Node * compareTree, Scene_Node * objectTreeRoot);
+
 private:
 	Mesh* m_pModel;
 	vector <Scene_Node*> m_children;
@@ -54,5 +60,11 @@ private:
 	float m_x, m_y, m_z;
 	float m_xangle, m_yangle, m_zangle;
 	float m_scale;
+
+	float m_world_centre_x;
+	float m_world_centre_y;
+	float m_world_centre_z;
+
+	float m_world_scale;
 };
 
