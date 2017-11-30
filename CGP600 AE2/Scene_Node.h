@@ -53,6 +53,9 @@ public:
 	bool CheckCollision(Scene_Node* compareTree);
 	bool CheckCollision(Scene_Node * compareTree, Scene_Node * objectTreeRoot);
 
+	void setCanCollide(bool canCollide);
+	void setCanDraw(bool canDraw);
+
 private:
 	Mesh* m_pModel;
 	vector <Scene_Node*> m_children;
@@ -66,5 +69,8 @@ private:
 	float m_world_centre_z;
 
 	float m_world_scale;
+
+	bool m_canCollide = true;
+	bool m_canDraw = true;
 };
 

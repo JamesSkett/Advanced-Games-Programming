@@ -88,7 +88,7 @@ bool Scene_Node::UpdateXPos(float distance, Scene_Node* rootNode)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	rootNode->UpdateCollisionTree(&identity, 1.0);
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
 
 	// check for collision of this node (and children) against all other nodes
 	if (CheckCollision(rootNode) == true)
@@ -113,7 +113,7 @@ bool Scene_Node::UpdateYPos(float distance, Scene_Node* rootNode)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	rootNode->UpdateCollisionTree(&identity, 1.0);
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
 
 	// check for collision of this node (and children) against all other nodes
 	if (CheckCollision(rootNode) == true)
@@ -137,7 +137,7 @@ bool Scene_Node::UpdateZPos(float distance, Scene_Node* rootNode)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	rootNode->UpdateCollisionTree(&identity, 1.0);
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
 
 	// check for collision of this node (and children) against all other nodes
 	if (CheckCollision(rootNode) == true)
@@ -208,8 +208,12 @@ void Scene_Node::Execute(XMMATRIX * world, XMMATRIX * view, XMMATRIX * projectio
 	//parent nodes so that this nodes transformations are relative to those
 	local_world *= *world;
 
-	// only draw if there is a model attached
-	if (m_pModel) m_pModel->Draw(&local_world, view, projection);
+	if (m_canDraw == true)
+	{
+		// only draw if there is a model attached
+		if (m_pModel) m_pModel->Draw(&local_world, view, projection);
+	}
+	
 
 	// traverse all child nodes, passing in the concatenated world matrix
 	for (unsigned int i = 0; i< m_children.size(); i++)
@@ -285,6 +289,11 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 	// i.e. stop object node and children being checked against each other
 	if (objectTreeRoot == compareTree) return false;
 
+	if (compareTree->m_canCollide == false)
+	{
+		return false;
+	}
+
 	if (m_pModel && compareTree->m_pModel)
 	{
 		XMVECTOR v1 = GetWorldCentrePos();
@@ -302,10 +311,10 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 		float dy = y1 - y2;
 		float dz = z1 - z2;
 
-		if (sqrt(dx*dx + dy*dy + dz*dz) <
-			(compareTree->m_pModel->GetBoundingSphereRadius() *
-				compareTree->m_world_scale) +
-				(this->m_pModel->GetBoundingSphereRadius() * m_world_scale))
+		float distance = sqrt(dx*dx + dy*dy + dz*dz);
+		float sumOfRadii = (compareTree->m_pModel->GetBoundingSphereRadius() * compareTree->m_world_scale) + (this->m_pModel->GetBoundingSphereRadius() * m_world_scale);
+
+		if (distance <= sumOfRadii)
 		{
 			return true;
 		}
@@ -327,4 +336,14 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 
 
 	return false;
+}
+
+void Scene_Node::setCanCollide(bool canCollide)
+{
+	m_canCollide = canCollide;
+}
+
+void Scene_Node::setCanDraw(bool canDraw)
+{
+	m_canDraw = canDraw;
 }
