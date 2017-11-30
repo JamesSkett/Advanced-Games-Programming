@@ -37,6 +37,8 @@ Mesh::~Mesh()
 	//if (m_pD3D11Device)        m_pD3D11Device->Release();
 }
 
+
+
 int Mesh::LoadObjModel(char* fileName)
 {
 
@@ -119,9 +121,8 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 
 	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	//world = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle)) * DirectX::XMMatrixRotationY(XMConvertToRadians(m_yangle)) * DirectX::XMMatrixRotationZ(XMConvertToRadians(m_zangle));
-	//world *= DirectX::XMMatrixScaling(m_scale, m_scale, m_scale);
-	//world *= DirectX::XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
+	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
@@ -238,6 +239,21 @@ float Mesh::GetScale()
 float Mesh::GetBoundingSphereRadius()
 {
 	return m_bounding_sphere_radius * m_scale;
+}
+
+float Mesh::GetBoundingSphere_x()
+{
+	return m_bounding_sphere_centre_x;
+}
+
+float Mesh::GetBoundingSphere_y()
+{
+	return m_bounding_sphere_centre_y;
+}
+
+float Mesh::GetBoundingSphere_z()
+{
+	return m_bounding_sphere_centre_z;
 }
 
 void Mesh::UpdateXPos(float distance)
@@ -361,7 +377,7 @@ void Mesh::CalculateModelCentrePoint()
 	float minPosZ = m_pObject->vertices[0].Pos.z;
 
 
-	for (int i = 1; i < m_pObject->numverts; i++)
+	for (unsigned int i = 1; i < m_pObject->numverts; i++)
 	{
 		if (m_pObject->vertices[i].Pos.x > maxPosX)
 		{
@@ -408,7 +424,7 @@ void Mesh::CalculateBoundingSphereRadius()
 
 	float currentDistance;
 
-	for (int i = 1; i < m_pObject->numverts; i++)
+	for (unsigned int i = 1; i < m_pObject->numverts; i++)
 	{
 		currentDistance = sqrt((pow(m_pObject->vertices[i].Pos.x - m_bounding_sphere_centre_x, 2)) +
 			(pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +

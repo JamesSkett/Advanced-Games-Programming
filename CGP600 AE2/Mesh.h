@@ -18,9 +18,20 @@ struct MODEL_CONSTANT_BUFFER
 	XMVECTOR ambient_light_colour;	// 16 bytes
 };
 
-class Mesh
+__declspec(align(16)) class Mesh
 {
 public:
+
+	void* operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+	void operator delete(void* p)
+	{
+		return _mm_free(p);
+	}
+
 	//Constructor uses the device and context from the renderer class
 	Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext);
 	~Mesh();
@@ -51,6 +62,9 @@ public:
 	float GetZAngle();
 	float GetScale();
 	float GetBoundingSphereRadius();
+	float GetBoundingSphere_x();
+	float GetBoundingSphere_y();
+	float GetBoundingSphere_z();
 
 	//use these to move scale and rotate object
 	void UpdateXPos(float distance);
