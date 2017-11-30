@@ -23,20 +23,18 @@ public:
 	HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 	HRESULT InitialiseD3D();
 	void ShutdownD3D();
-	void RenderFrame(void);
+	void RenderFrame(Scene_Node* rootNode);
 	HRESULT InitialiseGraphics(void);
 
 	HRESULT InitialiseInput();
 	void ReadInputState();
 	bool IsKeyPressed(unsigned char DI_keycode);
 
-	void GetKeyboardInput();
-	void GetControllerInput();
-
 	static Camera* camera;
 	
 	
-
+	static ID3D11Device*           m_pD3DDevice;
+	static ID3D11DeviceContext*    m_pImmediateContext;
 
 private:
 	
@@ -48,8 +46,6 @@ private:
 
 	D3D_DRIVER_TYPE			m_driverType = D3D_DRIVER_TYPE_NULL;
 	D3D_FEATURE_LEVEL       m_featureLevel = D3D_FEATURE_LEVEL_11_0;
-	ID3D11Device*           m_pD3DDevice = NULL;
-	ID3D11DeviceContext*    m_pImmediateContext = NULL;
 	IDXGISwapChain*         m_pSwapChain = NULL;
 
 	ID3D11RenderTargetView* m_pBackBufferRTView = NULL;
@@ -68,22 +64,12 @@ private:
 	XMVECTOR g_directional_light_colour;
 	XMVECTOR g_ambient_light_colour;
 
-	CXBOXController* player1 = new CXBOXController(1);
 
 	IDirectInput8* m_direct_input;
 	IDirectInputDevice8* m_keyboard_device;
 	unsigned char m_keyboard_keys_state[256];
 
-	Mesh* mesh;
-	Mesh* mesh2;
-	Mesh* cameraMesh;
-
-	Scene_Node* m_root_node;
-
-	Scene_Node* m_node1;
-	Scene_Node* m_node2;
-	Scene_Node* m_camera_node;
-	//Scene_Node* m_node3;
+	
 	
 };
 
