@@ -11,9 +11,9 @@ Camera::Camera(float x, float y, float z, float rotation)
 	m_z = z;
 	m_camera_rotation = rotation;
 
-	m_dx = sin(XMConvertToRadians(m_camera_rotation));
-	m_dz = cos(XMConvertToRadians(m_camera_rotation));
-	m_dy = sin(XMConvertToRadians(m_camera_rotation));
+	m_dx = sinf(XMConvertToRadians(m_camera_rotation));
+	m_dz = cosf(XMConvertToRadians(m_camera_rotation));
+	m_dy = sinf(XMConvertToRadians(m_camera_rotation));
 
 }
 
@@ -25,8 +25,8 @@ void Camera::Rotate(float number_of_degrees /*float objectX, float objectY, floa
 {
 	m_camera_rotation += number_of_degrees;
 
-	m_dx = sin(XMConvertToRadians(m_camera_rotation));
-	m_dz = cos(XMConvertToRadians(m_camera_rotation));
+	m_dx = sinf(XMConvertToRadians(m_camera_rotation));
+	m_dz = cosf(XMConvertToRadians(m_camera_rotation));
 
 }
 
@@ -58,8 +58,8 @@ void Camera::Pitch(float number_of_degrees)
 {
 	m_camera_rotation += number_of_degrees;
 
-	m_dy = sin(XMConvertToRadians(m_camera_rotation));
-	m_dz = cos(XMConvertToRadians(m_camera_rotation));
+	m_dy = sinf(XMConvertToRadians(m_camera_rotation));
+	m_dz = cosf(XMConvertToRadians(m_camera_rotation));
 	
 	m_up = XMVector3Cross(m_right, m_lookat);
 
@@ -89,10 +89,10 @@ void Camera::CameraFollow(float targetX, float targetY, float targetZ)
 
 void Camera::LookAt(float targetX, float targetZ)
 {
-	m_camera_rotation = atan2((targetX - m_x), (targetZ - m_z)) * (180 / XM_PI);
+	m_camera_rotation = atan2f((targetX - m_x), (targetZ - m_z)) * (180 / XM_PI);
 
-	m_dx = sin(XMConvertToRadians(m_camera_rotation));
-	m_dz = cos(XMConvertToRadians(m_camera_rotation));
+	m_dx = sinf(XMConvertToRadians(m_camera_rotation));
+	m_dz = cosf(XMConvertToRadians(m_camera_rotation));
 }
 
 
