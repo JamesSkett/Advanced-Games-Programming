@@ -19,6 +19,10 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_dz = cos(XMConvertToRadians(m_zangle));
 	m_dy = tan(XMConvertToRadians(m_yangle));
 
+	xyz xyz1 = { 1, 2, 3 };
+	xyz xyz2 = { 3, 2, 1 };
+
+	xyz dot1 = math.CrossProduct(&xyz1, &xyz2);
 }
 
 Mesh::~Mesh()
@@ -44,8 +48,8 @@ int Mesh::LoadObjModel(char* fileName)
 
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
 
-	//CalculateModelCentrePoint();
-	//CalculateBoundingSphereRadius();
+	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
@@ -121,8 +125,8 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 
 	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	CalculateModelCentrePoint();
-	CalculateBoundingSphereRadius();
+	//CalculateModelCentrePoint();
+	//CalculateBoundingSphereRadius();
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;

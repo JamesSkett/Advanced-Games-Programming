@@ -9,6 +9,8 @@ using namespace DirectX;
 
 //My class includes
 #include "objfilemodel.h"
+#include "Math.h"
+
 
 struct MODEL_CONSTANT_BUFFER
 {
@@ -35,6 +37,8 @@ public:
 	//Constructor uses the device and context from the renderer class
 	Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext);
 	~Mesh();
+
+	Math math;
 
 	//loads the mesh object
 	int LoadObjModel(char* fileName);
