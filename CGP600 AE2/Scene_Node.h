@@ -36,9 +36,9 @@ public:
 	bool UpdateXPos(float distance, Scene_Node* rootNode);
 	bool UpdateYPos(float distance, Scene_Node* rootNode);
 	bool UpdateZPos(float distance, Scene_Node* rootNode);
-	void UpdateXangle(float angle);
-	void UpdateYangle(float angle);
-	void UpdateZangle(float angle);
+	bool UpdateXangle(float angle, Scene_Node* rootNode);
+	bool UpdateYangle(float angle, Scene_Node* rootNode);
+	bool UpdateZangle(float angle, Scene_Node* rootNode);
 
 	void SetModel(Mesh* mesh);
 	void AddChildNode(Scene_Node* n);

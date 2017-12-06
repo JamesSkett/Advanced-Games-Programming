@@ -151,19 +151,77 @@ bool Scene_Node::UpdateZPos(float distance, Scene_Node* rootNode)
 	return false;
 }
 
-void Scene_Node::UpdateXangle(float angle)
+bool Scene_Node::UpdateXangle(float angle, Scene_Node* rootNode)
 {
-	m_xangle += angle;
+	float old_x = m_xangle;	// save current state 	
+	m_xangle += angle; // update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_xangle = old_x;
+
+		return true;
+	}
+
+	return false;
 }
 
-void Scene_Node::UpdateYangle(float angle)
+bool Scene_Node::UpdateYangle(float angle, Scene_Node* rootNode)
 {
-	m_yangle += angle;
+	
+	float old_y = m_yangle;	// save current state 	
+	m_yangle += angle; // update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_yangle = old_y;
+
+		return true;
+	}
+
+	return false;
 }
 
-void Scene_Node::UpdateZangle(float angle)
+bool Scene_Node::UpdateZangle(float angle, Scene_Node* rootNode)
 {
-	m_zangle += angle;
+	float old_z = m_zangle;	// save current state 	
+	m_zangle += angle; // update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	rootNode->UpdateCollisionTree(&identity, 1.0f);
+
+	// check for collision of this node (and children) against all other nodes
+	if (CheckCollision(rootNode) == true)
+	{
+		// if collision restore state
+		m_zangle = old_z;
+
+		return true;
+	}
+
+	return false;
 }
 
 void Scene_Node::SetModel(Mesh * mesh)
