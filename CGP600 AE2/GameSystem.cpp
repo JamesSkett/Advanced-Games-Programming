@@ -101,8 +101,6 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		else
 		{
 			
-
-
 			bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
 
 			GetControllerInput();

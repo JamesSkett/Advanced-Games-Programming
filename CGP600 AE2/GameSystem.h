@@ -23,7 +23,6 @@ public:
 	void GetKeyboardInput();
 	void GetControllerInput();
 
-
 	CXBOXController* player1 = new CXBOXController(1);
 
 private:

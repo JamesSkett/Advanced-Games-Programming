@@ -130,10 +130,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Character.cpp" />
     <ClCompile Include="CXBOXController.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -142,9 +142,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Character.h" />
     <ClInclude Include="CXBOXController.h" />
     <ClInclude Include="GameSystem.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Renderer.h" />
