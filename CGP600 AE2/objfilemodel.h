@@ -10,6 +10,7 @@
 using namespace std;
 using namespace DirectX;
 
+struct xyz { float x, y, z; };	//used for vertices and normals during file parse
 
 class ObjFileModel
 {
@@ -43,7 +44,7 @@ private:
 
 public:
 
-	struct xyz { float x, y, z; };	//used for vertices and normals during file parse
+	
 	struct xy { float x, y; };		//used for texture coordinates during file parse
 
 	// Define model vertex structure
