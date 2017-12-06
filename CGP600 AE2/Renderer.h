@@ -57,8 +57,7 @@ private:
 	ID3D11Buffer*			m_pConstantBuffer0;
 
 	ID3D11DepthStencilView* m_pzBuffer;
-	ID3D11ShaderResourceView* m_pTexture0;
-	ID3D11SamplerState* m_pSampler0;
+	
 
 	XMVECTOR g_directional_light_shines_from;
 	XMVECTOR g_directional_light_colour;

@@ -216,8 +216,6 @@ void Renderer::ShutdownD3D()
 	if (m_pInputLayout)  m_pInputLayout->Release();
 	if (m_pVertexShader) m_pVertexShader->Release();
 	if (m_pPixelShader)  m_pPixelShader->Release();
-	if (m_pTexture0)     m_pTexture0->Release();
-	if (m_pSampler0)     m_pSampler0->Release();
 
 	if (m_pSwapChain)        m_pSwapChain->Release();
 	if (m_pConstantBuffer0)  m_pConstantBuffer0->Release();
