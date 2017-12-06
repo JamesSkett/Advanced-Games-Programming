@@ -20,9 +20,11 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_dy = tan(XMConvertToRadians(m_yangle));
 
 	xyz xyz1 = { 1, 2, 3 };
-	xyz xyz2 = { 3, 2, 1 };
+	xyz xyz2 = { 3, 4, 1 };
+	xyz xyz3 = { 4, 5, 6 };
 
-	xyz dot1 = math.CrossProduct(&xyz1, &xyz2);
+	Plane dot1 = math.PlaneVal(&xyz1, &xyz2, &xyz3);
+	float planeVal = math.CalculatePlaneValForPoint(&dot1, &xyz1);
 }
 
 Mesh::~Mesh()
