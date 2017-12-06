@@ -101,7 +101,7 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		else
 		{
 			
-			bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
+			//bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
 
 			GetControllerInput();
 			GetKeyboardInput();
@@ -149,11 +149,12 @@ void GameSystem::SetupLevel()
 	//m_node1->AddChildNode(m_node2);
 	//g_node2->AddChildNode(g_node3);
 
-	m_node1->SetScale(0.1f);
-	m_node2->SetScale(0.1f);
-	m_node1->SetZPos(5.0f);
-	m_node2->SetZPos(5.0f);
-	m_node2->SetXPos(2.0f);
+	m_node1->SetScale(1.0f);
+	m_node2->SetScale(1.0f);
+	m_node1->SetZPos(35.0f);
+	m_node2->SetZPos(35.0f);
+	m_node2->SetXPos(32.0f);
+	m_node1->SetXPos(-35.0f);
 	m_camera_node->SetScale(0.1f);
 
 }

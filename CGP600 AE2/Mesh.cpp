@@ -129,6 +129,7 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 
 	//CalculateModelCentrePoint();
 	//CalculateBoundingSphereRadius();
+	GetBoundingSphereWorldSpacePosition();
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
