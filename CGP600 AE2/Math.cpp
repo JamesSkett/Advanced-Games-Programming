@@ -40,9 +40,10 @@ xyz Math::Normal(xyz * point1, xyz * point2, xyz * point3)
 	xyz v1 = { (point2->x - point1->x), (point2->y - point1->y), (point2->z - point1->z) };
 	xyz v2 = { (point3->x - point1->x), (point3->y - point1->y), (point3->z - point1->z) };
 
+	float distance = sqrt(pow((v2.x - v1.x), 2) + pow((v2.y - v1.y), 2) + pow((v2.z - v1.z), 2));
+
 	xyz crossProduct = CrossProduct(&v1, &v2);
 
-	float distance = sqrt(pow((v2.x - v1.x), 2) + pow((v2.y - v1.y), 2) + pow((v2.z - v1.z), 2));
 
 	float normalX = crossProduct.x / distance;
 	float normalY = crossProduct.y / distance;
