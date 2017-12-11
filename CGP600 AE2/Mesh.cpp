@@ -260,6 +260,11 @@ float Mesh::GetBoundingSphere_z()
 	return m_bounding_sphere_centre_z;
 }
 
+ObjFileModel* Mesh::GetObject()
+{
+	return m_pObject;
+}
+
 void Mesh::UpdateXPos(float distance)
 {
 	m_x += distance;
