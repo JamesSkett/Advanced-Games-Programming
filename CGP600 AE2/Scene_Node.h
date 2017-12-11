@@ -75,5 +75,7 @@ private:
 
 	bool m_canCollide = true;
 	bool m_canDraw = true;
+
+	XMMATRIX m_local_world_matrix;
 };
 

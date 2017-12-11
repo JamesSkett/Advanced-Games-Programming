@@ -331,19 +331,19 @@ XMVECTOR Scene_Node::GetWorldCentrePos()
 void Scene_Node::UpdateCollisionTree(XMMATRIX* world, float scale)
 {
 	// the local_world matrix will be used to calculate the local transformations for this node
-	XMMATRIX local_world = XMMatrixIdentity();
+	m_local_world_matrix = XMMatrixIdentity();
 
-	local_world = XMMatrixRotationX(XMConvertToRadians(m_xangle));
-	local_world *= XMMatrixRotationY(XMConvertToRadians(m_yangle));
-	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	m_local_world_matrix = XMMatrixRotationX(XMConvertToRadians(m_xangle));
+	m_local_world_matrix *= XMMatrixRotationY(XMConvertToRadians(m_yangle));
+	m_local_world_matrix *= XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 
-	local_world *= XMMatrixScaling(m_scale, m_scale, m_scale);
+	m_local_world_matrix *= XMMatrixScaling(m_scale, m_scale, m_scale);
 
-	local_world *= XMMatrixTranslation(m_x, m_y, m_z);
+	m_local_world_matrix *= XMMatrixTranslation(m_x, m_y, m_z);
 
 	// the local matrix is multiplied by the passed in world matrix that contains the concatenated
 	// transformations of all parent nodes so that this nodes transformations are relative to those
-	local_world *= *world;
+	m_local_world_matrix *= *world;
 
 	// calc the world space scale of this object, is needed to calculate the  
 	// correct bounding sphere radius of an object in a scaled hierarchy
@@ -359,7 +359,7 @@ void Scene_Node::UpdateCollisionTree(XMMATRIX* world, float scale)
 	else v = XMVectorSet(0, 0, 0, 0); // no model, default to 0
 
 									  // find and store world space bounding sphere centre
-	v = XMVector3Transform(v, local_world);
+	v = XMVector3Transform(v, m_local_world_matrix);
 	m_world_centre_x = XMVectorGetX(v);
 	m_world_centre_y = XMVectorGetY(v);
 	m_world_centre_z = XMVectorGetZ(v);
@@ -367,7 +367,7 @@ void Scene_Node::UpdateCollisionTree(XMMATRIX* world, float scale)
 	// traverse all child nodes, passing in the concatenated world matrix and scale
 	for (unsigned int i = 0; i< m_children.size(); i++)
 	{
-		m_children[i]->UpdateCollisionTree(&local_world, m_world_scale);
+		m_children[i]->UpdateCollisionTree(&m_local_world_matrix, m_world_scale);
 	}
 
 
