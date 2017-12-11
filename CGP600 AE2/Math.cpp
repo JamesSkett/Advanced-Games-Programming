@@ -69,3 +69,28 @@ float Math::CalculatePlaneValForPoint(Plane * plane, xyz * point)
 {
 	return Dot(&plane->normal, point) + plane->d;
 }
+
+int Math::Sign(float number) // returns 1 or -1 depending on sign of number, or 0 if zero
+{
+	return (number < 0.0f ? -1 : (number > 0.0f ? 1 : 0));
+}
+
+xyz Math::PlaneIntersection(Plane* p, xyz* point1, xyz* point2)
+{
+	xyz pointOfIntersection;
+	xyz pNormal = p->normal;
+	xyz pointOnRay;
+	float pd = p->d;
+
+	float rayX = point2->x - point1->x;
+	float rayY = point2->y - point1->y;
+	float rayZ = point2->z - point1->z;
+
+	xyz ray = { rayX, rayY, rayZ };
+
+	float t = (-pd - Dot(&pNormal, point1)) / Dot(&pNormal, &ray);
+
+	pointOnRay = { point1->x + (ray.x * t), point1->y + (ray.y * t), point1->z + (ray.z * t) };
+
+	return xyz();
+}
