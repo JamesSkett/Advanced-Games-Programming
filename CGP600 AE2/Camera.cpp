@@ -80,6 +80,21 @@ float Camera::GetZ()
 	return m_z;
 }
 
+float Camera::GetDirectionX()
+{
+	return m_dx;
+}
+
+float Camera::GetDirectionY()
+{
+	return m_dy;
+}
+
+float Camera::GetDirectionZ()
+{
+	return m_dz;
+}
+
 void Camera::CameraFollow(float targetX, float targetY, float targetZ)
 {
 	//m_x = targetX;
