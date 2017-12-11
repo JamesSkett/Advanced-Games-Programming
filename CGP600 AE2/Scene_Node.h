@@ -40,6 +40,8 @@ public:
 	bool UpdateYangle(float angle, Scene_Node* rootNode);
 	bool UpdateZangle(float angle, Scene_Node* rootNode);
 
+	bool MoveForward(float speed, Scene_Node* rootNode);
+
 	void SetModel(Mesh* mesh);
 	void AddChildNode(Scene_Node* n);
 
@@ -63,6 +65,7 @@ private:
 	float m_x, m_y, m_z;
 	float m_xangle, m_yangle, m_zangle;
 	float m_scale;
+	float m_dx, m_dy, m_dz;
 
 	float m_world_centre_x;
 	float m_world_centre_y;
