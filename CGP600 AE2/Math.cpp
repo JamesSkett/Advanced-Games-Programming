@@ -77,17 +77,11 @@ int Math::Sign(float number) // returns 1 or -1 depending on sign of number, or 
 
 xyz Math::PlaneIntersection(Plane* p, xyz* point1, xyz* point2)
 {
-<<<<<<< HEAD
+
 	//xyz pointOfIntersection;
 	xyz planeNormal = p->normal;
 	xyz pointOnRay;
 	float planeD = p->d;
-=======
-	xyz pointOfIntersection;
-	xyz pNormal = p->normal;
-	xyz pointOnRay;
-	float pd = p->d;
->>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
 
 	float rayX = point2->x - point1->x;
 	float rayY = point2->y - point1->y;
@@ -95,7 +89,6 @@ xyz Math::PlaneIntersection(Plane* p, xyz* point1, xyz* point2)
 
 	xyz ray = { rayX, rayY, rayZ };
 
-<<<<<<< HEAD
 	float t = (-planeD - Dot(&planeNormal, point1)) / Dot(&planeNormal, &ray);
 
 	pointOnRay = { point1->x + (ray.x * t), point1->y + (ray.y * t), point1->z + (ray.z * t) };
@@ -128,11 +121,4 @@ bool Math::InTriangle(xyz* triangle, xyz* triangle1, xyz* triangle2, xyz* point)
 	}
 
 	return false;
-=======
-	float t = (-pd - Dot(&pNormal, point1)) / Dot(&pNormal, &ray);
-
-	pointOnRay = { point1->x + (ray.x * t), point1->y + (ray.y * t), point1->z + (ray.z * t) };
-
-	return xyz();
->>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
 }

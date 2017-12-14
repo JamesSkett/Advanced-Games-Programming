@@ -14,10 +14,9 @@ using namespace DirectX;
 #include "Mesh.h"
 #include "Scene_Node.h"
 
-class Renderer
+__declspec(align(16)) class Renderer
 {
 public:
-<<<<<<< HEAD
 	void* operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
@@ -28,8 +27,6 @@ public:
 		return _mm_free(p);
 	}
 
-=======
->>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
 	Renderer();
 	~Renderer();
 

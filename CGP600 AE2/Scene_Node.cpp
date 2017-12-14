@@ -444,7 +444,6 @@ void Scene_Node::setCanCollide(bool canCollide)
 void Scene_Node::setCanDraw(bool canDraw)
 {
 	m_canDraw = canDraw;
-<<<<<<< HEAD
 }
 
 bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
@@ -460,7 +459,7 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 
 		if (distance > sum)
 		{
-			for (int i = 0; i <= m_pObject->numverts; i + 3)
+			for (unsigned int i = 0; i <= m_pObject->numverts; i + 3)
 			{
 				XMVECTOR p1 = XMVectorSet(m_pObject->vertices[i].Pos.x, m_pObject->vertices[i].Pos.y, m_pObject->vertices[i].Pos.z, 0.0f);
 				XMVECTOR p2 = XMVectorSet(m_pObject->vertices[i + 1].Pos.x, m_pObject->vertices[i + 1].Pos.y, m_pObject->vertices[i + 1].Pos.z, 0.0f);
@@ -480,6 +479,4 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 	}
 
 	return false;
-=======
->>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
 }

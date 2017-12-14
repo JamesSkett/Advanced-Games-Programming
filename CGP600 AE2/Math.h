@@ -23,9 +23,8 @@ public:
 	float CalculatePlaneValForPoint(Plane* plane, xyz* point);
 	int Sign(float number);
 	xyz PlaneIntersection(Plane * p, xyz * point1, xyz * point2);
-<<<<<<< HEAD
+
 	bool InTriangle(xyz * triangle, xyz * triangle1, xyz * triangle2, xyz * point);
-=======
->>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
+
 };
 
