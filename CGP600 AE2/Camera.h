@@ -34,6 +34,9 @@ public:
 	float GetX();
 	float GetY();
 	float GetZ();
+	float GetDirectionX();
+	float GetDirectionY();
+	float GetDirectionZ();
 
 	void CameraFollow(float targetX, float targetY, float targetZ);
 
