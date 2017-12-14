@@ -69,6 +69,7 @@ public:
 	float GetBoundingSphere_x();
 	float GetBoundingSphere_y();
 	float GetBoundingSphere_z();
+	ObjFileModel* GetObject();
 
 	//use these to move scale and rotate object
 	void UpdateXPos(float distance);

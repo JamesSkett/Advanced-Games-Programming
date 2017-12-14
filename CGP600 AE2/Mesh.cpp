@@ -13,7 +13,7 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_xangle = 0.0f;
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
-	m_scale = 0.5f;
+	m_scale = 1.0f;
 
 	m_dx = sin(XMConvertToRadians(m_xangle));
 	m_dz = cos(XMConvertToRadians(m_zangle));
@@ -49,9 +49,6 @@ int Mesh::LoadObjModel(char* fileName)
 {
 
 	m_pObject = new ObjFileModel(fileName, m_pD3D11Device, m_pImmediateContext);
-
-	CalculateModelCentrePoint();
-	CalculateBoundingSphereRadius();
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
@@ -114,7 +111,8 @@ int Mesh::LoadObjModel(char* fileName)
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
 
-
+	//CalculateModelCentrePoint();
+	//CalculateBoundingSphereRadius();
 
 	return 0;
 }
@@ -127,9 +125,8 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 
 	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	//CalculateModelCentrePoint();
-	//CalculateBoundingSphereRadius();
-	GetBoundingSphereWorldSpacePosition();
+	CalculateModelCentrePoint();
+	CalculateBoundingSphereRadius();
 
 	XMMATRIX transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
@@ -261,6 +258,11 @@ float Mesh::GetBoundingSphere_y()
 float Mesh::GetBoundingSphere_z()
 {
 	return m_bounding_sphere_centre_z;
+}
+
+ObjFileModel* Mesh::GetObject()
+{
+	return m_pObject;
 }
 
 void Mesh::UpdateXPos(float distance)
@@ -426,16 +428,16 @@ void Mesh::CalculateModelCentrePoint()
 void Mesh::CalculateBoundingSphereRadius()
 {
 	float maxDistance = sqrt((pow(m_pObject->vertices[0].Pos.x - m_bounding_sphere_centre_x, 2)) +
-		(pow(m_pObject->vertices[0].Pos.y - m_bounding_sphere_centre_y, 2)) +
-		(pow(m_pObject->vertices[0].Pos.z - m_bounding_sphere_centre_z, 2)));
+							 (pow(m_pObject->vertices[0].Pos.y - m_bounding_sphere_centre_y, 2)) +
+							 (pow(m_pObject->vertices[0].Pos.z - m_bounding_sphere_centre_z, 2)));
 
 	float currentDistance;
 
 	for (unsigned int i = 1; i < m_pObject->numverts; i++)
 	{
 		currentDistance = sqrt((pow(m_pObject->vertices[i].Pos.x - m_bounding_sphere_centre_x, 2)) +
-			(pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +
-			(pow(m_pObject->vertices[i].Pos.z - m_bounding_sphere_centre_z, 2)));
+							   (pow(m_pObject->vertices[i].Pos.y - m_bounding_sphere_centre_y, 2)) +
+							   (pow(m_pObject->vertices[i].Pos.z - m_bounding_sphere_centre_z, 2)));
 
 		if (currentDistance > maxDistance)
 		{
