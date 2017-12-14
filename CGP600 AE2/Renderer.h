@@ -17,7 +17,6 @@ using namespace DirectX;
 __declspec(align(16)) class Renderer
 {
 public:
-
 	void* operator new(size_t i)
 	{
 		return _mm_malloc(i, 16);
