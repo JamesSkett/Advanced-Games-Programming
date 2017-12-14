@@ -444,6 +444,7 @@ void Scene_Node::setCanCollide(bool canCollide)
 void Scene_Node::setCanDraw(bool canDraw)
 {
 	m_canDraw = canDraw;
+<<<<<<< HEAD
 }
 
 bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
@@ -479,4 +480,6 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 	}
 
 	return false;
+=======
+>>>>>>> 52b063b90af63b86e785e8f184675556db8b63e0
 }
