@@ -1,5 +1,7 @@
 #include "GameSystem.h"
 
+Math* GameSystem::math;
+
 GameSystem::GameSystem()
 {
 	renderer = new Renderer;
@@ -120,8 +122,8 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 void GameSystem::SetupLevel()
 {
 	mesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	mesh->LoadObjModel("assets/Sphere.obj");
-
+	mesh->LoadObjModel("assets/spaceship.obj");
+	
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
 
@@ -149,12 +151,12 @@ void GameSystem::SetupLevel()
 	//m_node1->AddChildNode(m_node2);
 	//g_node2->AddChildNode(g_node3);
 
-	m_node1->SetScale(1.0f);
-	m_node2->SetScale(1.0f);
-	m_node1->SetZPos(35.0f);
-	m_node2->SetZPos(35.0f);
-	m_node2->SetXPos(32.0f);
-	m_node1->SetXPos(-35.0f);
+	m_node1->SetScale(0.1f);
+	m_node2->SetScale(0.3f);
+	m_node1->SetZPos(5.0f);
+	m_node2->SetZPos(5.0f);
+	m_node2->SetXPos(2.0f);
+	m_node1->SetXPos(-5.0f);
 	m_camera_node->SetScale(0.1f);
 
 }
@@ -175,12 +177,12 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_W))
 	{
-		m_node1->UpdateZPos(0.1f, m_root_node);
+		m_node1->MoveForward(0.1f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_S))
 	{
-		m_node1->UpdateZPos(-0.1f, m_root_node);
+		m_node1->MoveForward(-0.1f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_UP))
@@ -236,12 +238,12 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_D))
 	{
-		m_node1->UpdateXPos(0.1f, m_root_node);
+		m_node1->UpdateYangle(0.5f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_A))
 	{
-		m_node1->UpdateXPos(-0.1f, m_root_node);
+		m_node1->UpdateYangle(-0.5f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_RIGHT))
@@ -293,10 +295,20 @@ void GameSystem::GetKeyboardInput()
 
 		}
 	}
+
+	if (renderer->IsKeyPressed(DIK_Q))
+	{
+		m_node1->UpdateYPos(0.2f, m_root_node);
+	}
+	if (renderer->IsKeyPressed(DIK_E))
+	{
+		m_node1->UpdateYPos(-0.2f, m_root_node);
+	}
 }
 
 void GameSystem::GetControllerInput()
 {
+	//gets the x and y values for the controller thumbsticks
 	float leftSticValY = player1->GetState().Gamepad.sThumbLY / 10000.0f;
 	float leftSticValX = player1->GetState().Gamepad.sThumbLX / 10000.0f;
 

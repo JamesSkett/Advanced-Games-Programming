@@ -10,6 +10,7 @@ using namespace DirectX;
 #include "Renderer.h"
 #include "Scene_Node.h"
 #include "Mesh.h"
+#include "Math.h"
 
 class GameSystem
 {
@@ -24,6 +25,7 @@ public:
 	void GetControllerInput();
 
 	CXBOXController* player1 = new CXBOXController(1);
+	static Math* math;
 
 private:
 	Renderer* renderer;
