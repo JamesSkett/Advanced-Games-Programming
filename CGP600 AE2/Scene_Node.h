@@ -8,6 +8,7 @@
 using namespace DirectX;
 
 #include "Mesh.h"
+#include "objfilemodel.h"
 
 class Scene_Node
 {
@@ -40,6 +41,8 @@ public:
 	bool UpdateYangle(float angle, Scene_Node* rootNode);
 	bool UpdateZangle(float angle, Scene_Node* rootNode);
 
+	bool MoveForward(float speed, Scene_Node* rootNode);
+
 	void SetModel(Mesh* mesh);
 	void AddChildNode(Scene_Node* n);
 
@@ -56,13 +59,17 @@ public:
 	void setCanCollide(bool canCollide);
 	void setCanDraw(bool canDraw);
 
+	bool CheckCollisionRay(xyz* rayPos, xyz* rayDirection);
+
 private:
 	Mesh* m_pModel;
+	ObjFileModel* m_pObject;
 	vector <Scene_Node*> m_children;
 
 	float m_x, m_y, m_z;
 	float m_xangle, m_yangle, m_zangle;
 	float m_scale;
+	float m_dx, m_dy, m_dz;
 
 	float m_world_centre_x;
 	float m_world_centre_y;
@@ -72,5 +79,7 @@ private:
 
 	bool m_canCollide = true;
 	bool m_canDraw = true;
+
+	XMMATRIX m_local_world_matrix;
 };
 
