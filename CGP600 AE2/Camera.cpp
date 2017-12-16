@@ -30,10 +30,15 @@ void Camera::Rotate(float number_of_degrees /*float objectX, float objectY, floa
 
 }
 
-void Camera::Forward(float distance)
+void Camera::Forward(float distance, Scene_Node* rootNode)
 {
 	m_x += m_dx * distance;
 	m_z += m_dz * distance;
+
+	xyz camPos = { m_x, m_y, m_z };
+	xyz camForward = { XMVectorGetX(m_forward), XMVectorGetY(m_forward), XMVectorGetZ(m_forward) };
+
+	rootNode->CheckCollisionRay(&camPos, &camForward);
 }
 
 void Camera::Up(float distance)

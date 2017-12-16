@@ -7,6 +7,8 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
+#include "Scene_Node.h"
+
 __declspec(align(16)) class Camera
 {
 public:
@@ -25,7 +27,7 @@ public:
 
 	//Functions to manipulate the camera
 	void Rotate(float number_of_degrees);
-	void Forward(float distance);
+	void Forward(float distance, Scene_Node* rootNode);
 	void Up(float distance);
 	void Strafe(float distance);
 	void Pitch(float number_of_degrees);
