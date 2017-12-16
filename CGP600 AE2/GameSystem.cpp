@@ -122,7 +122,7 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 void GameSystem::SetupLevel()
 {
 	mesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	mesh->LoadObjModel("assets/spaceship.obj");
+	mesh->LoadObjModel("assets/Sphere.obj");
 	
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
@@ -159,6 +159,9 @@ void GameSystem::SetupLevel()
 	m_node1->SetXPos(-5.0f);
 	//m_camera_node->SetScale(0.1f);
 
+	XMMATRIX identity = XMMatrixIdentity();
+
+	m_root_node->UpdateCollisionTree(&identity, 1.0f);
 }
 
 void GameSystem::GetKeyboardInput()
@@ -303,6 +306,16 @@ void GameSystem::GetKeyboardInput()
 	if (renderer->IsKeyPressed(DIK_E))
 	{
 		m_node1->UpdateYPos(-0.2f, m_root_node);
+	}
+
+	if (renderer->IsKeyPressed(DIK_N))
+	{
+		Renderer::camera->Rotate(0.5f);
+	}
+
+	if (renderer->IsKeyPressed(DIK_M))
+	{
+		Renderer::camera->Rotate(-0.5f);
 	}
 }
 

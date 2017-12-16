@@ -451,14 +451,17 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 
 	if (this->m_pModel)
 	{
-		m_pObject = this->m_pModel->GetObjectA();
+		m_pObject = m_pModel->GetObjectA();
+
+		xyz rayEndPos = { rayPos->x + rayDirection->x, rayPos->y + rayDirection->y, rayPos->z + rayDirection->z };
+		float rayLength = sqrt(pow(rayEndPos.x - rayPos->x, 2) + pow(rayEndPos.y - rayPos->y, 2) + pow(rayEndPos.z - rayPos->z, 2));
 
 		//distance between node and ray
-		float distance = sqrt(pow(this->m_x - rayPos->x, 2) + pow(this->m_y - rayPos->y, 2) + pow(this->m_y - rayPos->z, 2));
+		float distance = sqrt(pow(rayPos->x - m_world_centre_x, 2) + pow(rayPos->y - m_world_centre_y, 2) + pow(rayPos->z - m_world_centre_z, 2));
 		//get the sum of the bounding sphere radius and ray length
-		float sum = (this->m_pModel->GetBoundingSphereRadius() * this->m_world_scale) + distance;
+		float sum = (this->m_pModel->GetBoundingSphereRadius() * this->m_world_scale) + rayLength / 2;
 
-		if (distance >= sum)
+		if (distance < sum)
 		{
 			for (unsigned int i = 0; i <= m_pObject->numverts; i += 3)
 			{
@@ -476,10 +479,9 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 
 				Plane PlaneVal1 = GameSystem::math->PlaneVal(&point1, &point2, &point3);
 
-				xyz rayEnd = { rayPos->x + rayDirection->x, rayPos->y + rayDirection->y, rayPos->z + rayDirection->z };
 
 				float rayStartPlaneVal = GameSystem::math->CalculatePlaneValForPoint(&PlaneVal1, rayPos);
-				float rayEndPlanVal = GameSystem::math->CalculatePlaneValForPoint(&PlaneVal1, &rayEnd);
+				float rayEndPlanVal = GameSystem::math->CalculatePlaneValForPoint(&PlaneVal1, &rayEndPos);
 
 				int rayStartSign = GameSystem::math->Sign(rayStartPlaneVal);
 				int rayEndSign = GameSystem::math->Sign(rayEndPlanVal);
@@ -488,7 +490,7 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 
 				if (rayStartSign != rayEndSign)
 				{
-					pointOnRay = GameSystem::math->PlaneIntersection(&PlaneVal1, rayPos, &rayEnd);
+					pointOnRay = GameSystem::math->PlaneIntersection(&PlaneVal1, rayPos, &rayEndPos);
 
 					if (GameSystem::math->InTriangle(&point1, &point2, &point3, &pointOnRay))
 					{
@@ -501,7 +503,8 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 
 	for (unsigned int i = 0; i< m_children.size(); i++)
 	{
-		m_children[i]->CheckCollisionRay(rayPos, rayDirection);
+		if (m_children[i]->CheckCollisionRay(rayPos, rayDirection))
+			return true;
 	}
 
 	return false;
