@@ -32,13 +32,13 @@ private:
 
 	Mesh* mesh;
 	Mesh* mesh2;
-	Mesh* cameraMesh;
+	//Mesh* cameraMesh;
 
 	Scene_Node* m_root_node;
 
 	Scene_Node* m_node1;
 	Scene_Node* m_node2;
-	Scene_Node* m_camera_node;
+	//Scene_Node* m_camera_node;
 	//Scene_Node* m_node3;
 
 };

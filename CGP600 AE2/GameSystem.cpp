@@ -28,11 +28,11 @@ GameSystem::~GameSystem()
 		mesh2 = nullptr;
 	}
 
-	if (cameraMesh)
+	/*if (cameraMesh)
 	{
 		delete cameraMesh;
 		cameraMesh = nullptr;
-	}
+	}*/
 
 	
 
@@ -54,11 +54,11 @@ GameSystem::~GameSystem()
 		m_node2 = nullptr;
 	}
 
-	if (m_camera_node)
+	/*if (m_camera_node)
 	{
 		delete m_camera_node;
 		m_camera_node = nullptr;
-	}
+	}*/
 }
 
 int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -127,27 +127,27 @@ void GameSystem::SetupLevel()
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/Sphere.obj");
 
-	cameraMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	cameraMesh->LoadObjModel("assets/cube.obj");
+	//cameraMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	//cameraMesh->LoadObjModel("assets/cube.obj");
 
 	mesh->AddTexture("assets/Spaceship_D.bmp");
 	mesh2->AddTexture("assets/texture.bmp");
-	cameraMesh->AddTexture("assets/texture.bmp");
+	//cameraMesh->AddTexture("assets/texture.bmp");
 
 	m_root_node = new Scene_Node();
 	m_node1 = new Scene_Node();
 	m_node2 = new Scene_Node();
-	m_camera_node = new Scene_Node();
+	//m_camera_node = new Scene_Node();
 	//g_node3 = new Scene_Node();
 
 	m_node1->SetModel(mesh);
 	m_node2->SetModel(mesh2);
-	m_camera_node->SetModel(cameraMesh);
+	//m_camera_node->SetModel(cameraMesh);
 	//g_node3->SetModel(mesh);
 
 	m_root_node->AddChildNode(m_node1);
 	m_root_node->AddChildNode(m_node2);
-	m_root_node->AddChildNode(m_camera_node);
+	//m_root_node->AddChildNode(m_camera_node);
 	//m_node1->AddChildNode(m_node2);
 	//g_node2->AddChildNode(g_node3);
 
@@ -157,7 +157,7 @@ void GameSystem::SetupLevel()
 	m_node2->SetZPos(5.0f);
 	m_node2->SetXPos(2.0f);
 	m_node1->SetXPos(-5.0f);
-	m_camera_node->SetScale(0.1f);
+	//m_camera_node->SetScale(0.1f);
 
 }
 
@@ -187,53 +187,53 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_UP))
 	{
-		Renderer::camera->Forward(0.1f);
+		Renderer::camera->Forward(0.1f, m_root_node);
 
-		// set camera node to the position of the camera
-		m_camera_node->SetXPos(Renderer::camera->GetX());
-		m_camera_node->SetYPos(Renderer::camera->GetY());
-		m_camera_node->SetZPos(Renderer::camera->GetZ());
+		//// set camera node to the position of the camera
+		//m_camera_node->SetXPos(Renderer::camera->GetX());
+		//m_camera_node->SetYPos(Renderer::camera->GetY());
+		//m_camera_node->SetZPos(Renderer::camera->GetZ());
 
-		XMMATRIX identity = XMMatrixIdentity();
+		//XMMATRIX identity = XMMatrixIdentity();
 
-		// update tree to reflect new camera position
-		m_root_node->UpdateCollisionTree(&identity, 1.0);
+		//// update tree to reflect new camera position
+		//m_root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_camera_node->CheckCollision(m_root_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			Renderer::camera->Forward(-0.3f);
-			m_camera_node->SetXPos(Renderer::camera->GetX()); //15
-			m_camera_node->SetYPos(Renderer::camera->GetY());//15
-			m_camera_node->SetZPos(Renderer::camera->GetZ());//15
+		//if (m_camera_node->CheckCollision(m_root_node) == true)
+		//{
+		//	// if there is a collision, restore camera and camera node positions
+		//	Renderer::camera->Forward(-0.3f);
+		//	m_camera_node->SetXPos(Renderer::camera->GetX()); //15
+		//	m_camera_node->SetYPos(Renderer::camera->GetY());//15
+		//	m_camera_node->SetZPos(Renderer::camera->GetZ());//15
 
-		}
+		//}
 
 	}
 
 	if (renderer->IsKeyPressed(DIK_DOWN))
 	{
-		Renderer::camera->Forward(-0.1f);
+		Renderer::camera->Forward(-0.1f, m_root_node);
 
-		// set camera node to the position of the camera
-		m_camera_node->SetXPos(Renderer::camera->GetX());
-		m_camera_node->SetYPos(Renderer::camera->GetY());
-		m_camera_node->SetZPos(Renderer::camera->GetZ());
+		//// set camera node to the position of the camera
+		//m_camera_node->SetXPos(Renderer::camera->GetX());
+		//m_camera_node->SetYPos(Renderer::camera->GetY());
+		//m_camera_node->SetZPos(Renderer::camera->GetZ());
 
-		XMMATRIX identity = XMMatrixIdentity();
+		//XMMATRIX identity = XMMatrixIdentity();
 
-		// update tree to reflect new camera position
-		m_root_node->UpdateCollisionTree(&identity, 1.0);
+		//// update tree to reflect new camera position
+		//m_root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_camera_node->CheckCollision(m_root_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			Renderer::camera->Forward(0.7f);
-			m_camera_node->SetXPos(Renderer::camera->GetX()); //15
-			m_camera_node->SetYPos(Renderer::camera->GetY());//15
-			m_camera_node->SetZPos(Renderer::camera->GetZ());//15
+		//if (m_camera_node->CheckCollision(m_root_node) == true)
+		//{
+		//	// if there is a collision, restore camera and camera node positions
+		//	Renderer::camera->Forward(0.7f);
+		//	m_camera_node->SetXPos(Renderer::camera->GetX()); //15
+		//	m_camera_node->SetYPos(Renderer::camera->GetY());//15
+		//	m_camera_node->SetZPos(Renderer::camera->GetZ());//15
 
-		}
+		//}
 	}
 
 	if (renderer->IsKeyPressed(DIK_D))
@@ -250,50 +250,50 @@ void GameSystem::GetKeyboardInput()
 	{
 		Renderer::camera->Strafe(-0.1f);
 
-		// set camera node to the position of the camera
-		m_camera_node->SetXPos(Renderer::camera->GetX());
-		m_camera_node->SetYPos(Renderer::camera->GetY());
-		m_camera_node->SetZPos(Renderer::camera->GetZ());
+		//// set camera node to the position of the camera
+		//m_camera_node->SetXPos(Renderer::camera->GetX());
+		//m_camera_node->SetYPos(Renderer::camera->GetY());
+		//m_camera_node->SetZPos(Renderer::camera->GetZ());
 
-		XMMATRIX identity = XMMatrixIdentity();
+		//XMMATRIX identity = XMMatrixIdentity();
 
-		// update tree to reflect new camera position
-		m_root_node->UpdateCollisionTree(&identity, 1.0);
+		//// update tree to reflect new camera position
+		//m_root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_camera_node->CheckCollision(m_root_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			Renderer::camera->Strafe(0.7f);
-			m_camera_node->SetXPos(Renderer::camera->GetX()); //15
-			m_camera_node->SetYPos(Renderer::camera->GetY());//15
-			m_camera_node->SetZPos(Renderer::camera->GetZ());//15
+		//if (m_camera_node->CheckCollision(m_root_node) == true)
+		//{
+		//	// if there is a collision, restore camera and camera node positions
+		//	Renderer::camera->Strafe(0.7f);
+		//	m_camera_node->SetXPos(Renderer::camera->GetX()); //15
+		//	m_camera_node->SetYPos(Renderer::camera->GetY());//15
+		//	m_camera_node->SetZPos(Renderer::camera->GetZ());//15
 
-		}
+		//}
 	}
 
 	if (renderer->IsKeyPressed(DIK_LEFT))
 	{
 		Renderer::camera->Strafe(0.1f);
 
-		// set camera node to the position of the camera
-		m_camera_node->SetXPos(Renderer::camera->GetX());
-		m_camera_node->SetYPos(Renderer::camera->GetY());
-		m_camera_node->SetZPos(Renderer::camera->GetZ());
+		//// set camera node to the position of the camera
+		//m_camera_node->SetXPos(Renderer::camera->GetX());
+		//m_camera_node->SetYPos(Renderer::camera->GetY());
+		//m_camera_node->SetZPos(Renderer::camera->GetZ());
 
-		XMMATRIX identity = XMMatrixIdentity();
+		//XMMATRIX identity = XMMatrixIdentity();
 
-		// update tree to reflect new camera position
-		m_root_node->UpdateCollisionTree(&identity, 1.0);
+		//// update tree to reflect new camera position
+		//m_root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_camera_node->CheckCollision(m_root_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			Renderer::camera->Strafe(-0.7f);
-			m_camera_node->SetXPos(Renderer::camera->GetX()); //15
-			m_camera_node->SetYPos(Renderer::camera->GetY());//15
-			m_camera_node->SetZPos(Renderer::camera->GetZ());//15
+		//if (m_camera_node->CheckCollision(m_root_node) == true)
+		//{
+		//	// if there is a collision, restore camera and camera node positions
+		//	Renderer::camera->Strafe(-0.7f);
+		//	m_camera_node->SetXPos(Renderer::camera->GetX()); //15
+		//	m_camera_node->SetYPos(Renderer::camera->GetY());//15
+		//	m_camera_node->SetZPos(Renderer::camera->GetZ());//15
 
-		}
+		//}
 	}
 
 	if (renderer->IsKeyPressed(DIK_Q))
