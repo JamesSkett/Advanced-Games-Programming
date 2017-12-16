@@ -237,7 +237,7 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	XMMATRIX identity, projection, view;
 
 	identity = XMMatrixIdentity();
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 1.0f, 100.0f);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
 	view = camera->GetViewMatrix();
 
 	rootNode->Execute(&identity, &view, &projection);
