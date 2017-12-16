@@ -292,31 +292,31 @@ bool Scene_Node::DetachNode(Scene_Node * n)
 void Scene_Node::Execute(XMMATRIX * world, XMMATRIX * view, XMMATRIX * projection)
 {
 
-	XMMATRIX local_world = DirectX::XMMatrixIdentity();
+	//XMMATRIX local_world = DirectX::XMMatrixIdentity();
 
-	local_world = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle));
-	local_world *= DirectX::XMMatrixRotationY(XMConvertToRadians(m_yangle));
-	local_world *= DirectX::XMMatrixRotationZ(XMConvertToRadians(m_zangle));
+	m_local_world_matrix = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle));
+	m_local_world_matrix *= DirectX::XMMatrixRotationY(XMConvertToRadians(m_yangle));
+	m_local_world_matrix *= DirectX::XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 
-	local_world *= DirectX::XMMatrixScaling(m_scale, m_scale, m_scale);
+	m_local_world_matrix *= DirectX::XMMatrixScaling(m_scale, m_scale, m_scale);
 
-	local_world *= DirectX::XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
+	m_local_world_matrix *= DirectX::XMMatrixTranslation(m_x + m_dx, m_y + m_dy, m_z + m_dy);
 
 	//passed in world matrix contains concatenated transformations of all 
 	//parent nodes so that this nodes transformations are relative to those
-	local_world *= *world;
+	m_local_world_matrix *= *world;
 
 	if (m_canDraw == true)
 	{
 		// only draw if there is a model attached
-		if (m_pModel) m_pModel->Draw(&local_world, view, projection);
+		if (m_pModel) m_pModel->Draw(&m_local_world_matrix, view, projection);
 	}
 	
 
 	// traverse all child nodes, passing in the concatenated world matrix
 	for (unsigned int i = 0; i< m_children.size(); i++)
 	{
-		m_children[i]->Execute(&local_world, view, projection);
+		m_children[i]->Execute(&m_local_world_matrix, view, projection);
 	}
 
 	//UpdateCollisionTree(world, m_scale);
@@ -448,18 +448,19 @@ void Scene_Node::setCanDraw(bool canDraw)
 
 bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 {
+
 	if (this->m_pModel)
 	{
 		m_pObject = this->m_pModel->GetObjectA();
 
 		//distance between node and ray
-		float distance = sqrt(pow(rayPos->x - m_x, 2) + pow(rayPos->y - m_y, 2) + pow(rayPos->z - m_y, 2));
+		float distance = sqrt(pow(this->m_x - rayPos->x, 2) + pow(this->m_y - rayPos->y, 2) + pow(this->m_y - rayPos->z, 2));
 		//get the sum of the bounding sphere radius and ray length
-		float sum = this->m_pModel->GetBoundingSphereRadius() + distance;
+		float sum = (this->m_pModel->GetBoundingSphereRadius() * this->m_world_scale) + distance;
 
-		if (distance > sum)
+		if (distance >= sum)
 		{
-			for (unsigned int i = 0; i <= m_pObject->numverts; i + 3)
+			for (unsigned int i = 0; i <= m_pObject->numverts; i += 3)
 			{
 				XMVECTOR p1 = XMVectorSet(m_pObject->vertices[i].Pos.x, m_pObject->vertices[i].Pos.y, m_pObject->vertices[i].Pos.z, 0.0f);
 				XMVECTOR p2 = XMVectorSet(m_pObject->vertices[i + 1].Pos.x, m_pObject->vertices[i + 1].Pos.y, m_pObject->vertices[i + 1].Pos.z, 0.0f);
@@ -474,8 +475,33 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 				xyz point3 = { XMVectorGetX(p3), XMVectorGetY(p3), XMVectorGetZ(p3) };
 
 				Plane PlaneVal1 = GameSystem::math->PlaneVal(&point1, &point2, &point3);
+
+				xyz rayEnd = { rayPos->x + rayDirection->x, rayPos->y + rayDirection->y, rayPos->z + rayDirection->z };
+
+				float rayStartPlaneVal = GameSystem::math->CalculatePlaneValForPoint(&PlaneVal1, rayPos);
+				float rayEndPlanVal = GameSystem::math->CalculatePlaneValForPoint(&PlaneVal1, &rayEnd);
+
+				int rayStartSign = GameSystem::math->Sign(rayStartPlaneVal);
+				int rayEndSign = GameSystem::math->Sign(rayEndPlanVal);
+
+				xyz pointOnRay;
+
+				if (rayStartSign != rayEndSign)
+				{
+					pointOnRay = GameSystem::math->PlaneIntersection(&PlaneVal1, rayPos, &rayEnd);
+
+					if (GameSystem::math->InTriangle(&point1, &point2, &point3, &pointOnRay))
+					{
+						return true;
+					}
+				}
 			}
 		}
+	}
+
+	for (unsigned int i = 0; i< m_children.size(); i++)
+	{
+		m_children[i]->CheckCollisionRay(rayPos, rayDirection);
 	}
 
 	return false;
