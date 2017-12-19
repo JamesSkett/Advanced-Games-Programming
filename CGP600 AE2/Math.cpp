@@ -91,9 +91,16 @@ xyz Math::PlaneIntersection(Plane* p, xyz* point1, xyz* point2)
 
 	float t = (-planeD - Dot(&planeNormal, point1)) / Dot(&planeNormal, &ray);
 
-	pointOnRay = { point1->x + (ray.x * t), point1->y + (ray.y * t), point1->z + (ray.z * t) };
-
-	return pointOnRay;
+	if (t >= 0.0f && t <= 1.0f)
+	{
+		pointOnRay = { point1->x + (ray.x * t), point1->y + (ray.y * t), point1->z + (ray.z * t) };
+		return pointOnRay;
+	}
+	else
+	{
+		pointOnRay = { 99999999999.0f, 99999999999.0f, 99999999999.0f };
+		return pointOnRay;
+	}
 }
 
 bool Math::InTriangle(xyz* triangle, xyz* triangle1, xyz* triangle2, xyz* point)
