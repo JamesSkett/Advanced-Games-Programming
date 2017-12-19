@@ -105,7 +105,10 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 			
 			//bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
 
+			
 			GetControllerInput();
+			
+
 			GetKeyboardInput();
 
 			renderer->RenderFrame(m_root_node);
@@ -122,10 +125,10 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 void GameSystem::SetupLevel()
 {
 	mesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	mesh->LoadObjModel("assets/Sphere.obj");
+	mesh->LoadObjModel("assets/spaceship.obj");
 	
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	mesh2->LoadObjModel("assets/Sphere.obj");
+	mesh2->LoadObjModel("assets/sphere.obj");
 
 	//cameraMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	//cameraMesh->LoadObjModel("assets/cube.obj");
@@ -152,11 +155,11 @@ void GameSystem::SetupLevel()
 	//g_node2->AddChildNode(g_node3);
 
 	m_node1->SetScale(0.1f);
-	m_node2->SetScale(0.3f);
-	m_node1->SetZPos(5.0f);
-	m_node2->SetZPos(5.0f);
-	m_node2->SetXPos(2.0f);
-	m_node1->SetXPos(-5.0f);
+	m_node2->SetScale(0.1f);
+	m_node1->SetZPos(3.0f);
+	m_node2->SetZPos(3.1f);
+	m_node2->SetXPos(5.0f);
+	m_node1->SetXPos(-10.0f);
 	//m_camera_node->SetScale(0.1f);
 
 	XMMATRIX identity = XMMatrixIdentity();
@@ -241,12 +244,15 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_D))
 	{
-		m_node1->UpdateYangle(0.5f, m_root_node);
+		//m_node1->UpdateYangle(0.5f, m_root_node);
+		m_node1->UpdateXPos(0.05f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_A))
 	{
-		m_node1->UpdateYangle(-0.5f, m_root_node);
+		//m_node1->UpdateYangle(-0.5f, m_root_node);
+		m_node1->UpdateXPos(-0.05f, m_root_node);
+
 	}
 
 	if (renderer->IsKeyPressed(DIK_RIGHT))
