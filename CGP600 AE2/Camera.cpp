@@ -39,9 +39,9 @@ void Camera::Forward(float distance, Scene_Node* rootNode)
 	m_z += m_dz * distance;
 
 	xyz camPos = { m_x, m_y, m_z };
-	xyz camForward = { XMVectorGetX(m_forward), XMVectorGetY(m_forward), XMVectorGetZ(m_forward) };
+	xyz camForward = { XMVectorGetX(m_forward) / 2, XMVectorGetY(m_forward) / 2, XMVectorGetZ(m_forward) / 2 };
 
-	if (rootNode->CheckCollisionRay(&camPos, &camForward))
+	if (rootNode->CheckCollisionRay(&camPos, &camForward, true))
 	{
 		m_x = oldX;
 		m_z = oldZ;
