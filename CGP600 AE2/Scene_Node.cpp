@@ -387,13 +387,16 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 	// i.e. stop object node and children being checked against each other
 	if (objectTreeRoot == compareTree) return false;
 
+	//this is for if you dont want the object to register collisions
 	if (compareTree->m_canCollide == false)
 	{
 		return false;
 	}
 
+	//only check if the current node and compare tree both have objects assosiated
 	if (m_pModel && compareTree->m_pModel)
 	{
+		//get the models center points
 		XMVECTOR v1 = GetWorldCentrePos();
 		XMVECTOR v2 = compareTree->GetWorldCentrePos();
 		XMVECTOR vdiff = v1 - v2;
@@ -405,16 +408,99 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 		float z1 = XMVectorGetZ(v1);
 		float z2 = XMVectorGetZ(v2);
 
+		//calculate the difference between each of the coords
 		float dx = x1 - x2;
 		float dy = y1 - y2;
 		float dz = z1 - z2;
 
+		//use pythagorus to work out distance between two points
 		float distance = sqrt(dx*dx + dy*dy + dz*dz);
 		float sumOfRadii = (compareTree->m_pModel->GetBoundingSphereRadius() * compareTree->m_world_scale) + (this->m_pModel->GetBoundingSphereRadius() * m_world_scale);
 		
+		//if the distance is less than the sum of the radii
+		//start per triangle col check
 		if (distance <= sumOfRadii)
 		{
-			return true;
+			// get the objects of both the models
+			ObjFileModel* compareTreeObj = compareTree->m_pModel->GetObjectA();
+			ObjFileModel* thisObject = this->m_pModel->GetObjectA();
+
+			//loop through all the vertices 3 at a time to get each triangle
+			for (int i = 0; i < compareTreeObj->numverts; i += 3)
+			{
+				//the 3 points of a triangle
+				XMVECTOR p1 = XMVectorSet(compareTreeObj->vertices[i].Pos.x, compareTreeObj->vertices[i].Pos.y, compareTreeObj->vertices[i].Pos.z, 0.0f);
+				XMVECTOR p2 = XMVectorSet(compareTreeObj->vertices[i + 1].Pos.x, compareTreeObj->vertices[i + 1].Pos.y, compareTreeObj->vertices[i + 1].Pos.z, 0.0f);
+				XMVECTOR p3 = XMVectorSet(compareTreeObj->vertices[i + 2].Pos.x, compareTreeObj->vertices[i + 2].Pos.y, compareTreeObj->vertices[i + 2].Pos.z, 0.0f);
+
+				//make sure the points are correctly transformed
+				XMVector3Transform(p1, compareTree->m_local_world_matrix);
+				XMVector3Transform(p2, compareTree->m_local_world_matrix);
+				XMVector3Transform(p3, compareTree->m_local_world_matrix);
+
+				//put the points into xyz structs so they can be passed into the ray check function
+				xyz point1 = { XMVectorGetX(p1), XMVectorGetY(p1), XMVectorGetZ(p1) };
+				xyz point2 = { XMVectorGetX(p2), XMVectorGetY(p2), XMVectorGetZ(p2) };
+				xyz point3 = { XMVectorGetX(p3), XMVectorGetY(p3), XMVectorGetZ(p3) };
+
+				//calculate the ray magnitude
+				xyz ray1 = { (point2.x - point1.x), (point2.y - point1.y), (point2.z - point1.z) };
+				xyz ray2 = { (point3.x - point2.x), (point3.y - point2.y), (point3.z - point2.z) };
+				xyz ray3 = { (point1.x - point3.x), (point1.y - point3.y), (point1.z - point3.z) };
+
+				//check each point and ray for collisions
+				if (CheckCollisionRay(&point1, &ray1, false))
+				{
+					return true;
+				}
+
+				if (CheckCollisionRay(&point2, &ray2, false))
+				{
+					return true;
+				}
+
+				if (CheckCollisionRay(&point3, &ray3, false))
+				{
+					return true;
+				}
+
+			}
+
+			// repeat for current node model vertices
+			for (int i = 0; i < thisObject->numverts; i += 3)
+			{
+				XMVECTOR p1 = XMVectorSet(thisObject->vertices[i].Pos.x, thisObject->vertices[i].Pos.y, thisObject->vertices[i].Pos.z, 0.0f);
+				XMVECTOR p2 = XMVectorSet(thisObject->vertices[i + 1].Pos.x, thisObject->vertices[i + 1].Pos.y, thisObject->vertices[i + 1].Pos.z, 0.0f);
+				XMVECTOR p3 = XMVectorSet(thisObject->vertices[i + 2].Pos.x, thisObject->vertices[i + 2].Pos.y, thisObject->vertices[i + 2].Pos.z, 0.0f);
+
+				XMVector3Transform(p1, m_local_world_matrix);
+				XMVector3Transform(p2, m_local_world_matrix);
+				XMVector3Transform(p3, m_local_world_matrix);
+
+				xyz point1 = { XMVectorGetX(p1), XMVectorGetY(p1), XMVectorGetZ(p1) };
+				xyz point2 = { XMVectorGetX(p2), XMVectorGetY(p2), XMVectorGetZ(p2) };
+				xyz point3 = { XMVectorGetX(p3), XMVectorGetY(p3), XMVectorGetZ(p3) };
+
+				xyz ray1 = { (point2.x - point1.x), (point2.y - point1.y), (point2.z - point1.z) };
+				xyz ray2 = { (point3.x - point2.x), (point3.y - point2.y), (point3.z - point2.z) };
+				xyz ray3 = { (point1.x - point3.x), (point1.y - point3.y), (point1.z - point3.z) };
+
+				if (compareTree->CheckCollisionRay(&point1, &ray1, false))
+				{
+					return true;
+				}
+
+				if (compareTree->CheckCollisionRay(&point2, &ray2, false))
+				{
+					return true;
+				}
+
+				if (compareTree->CheckCollisionRay(&point3, &ray3, false))
+				{
+					return true;
+				}
+
+			}
 		}
 
 	}
@@ -446,7 +532,7 @@ void Scene_Node::setCanDraw(bool canDraw)
 	m_canDraw = canDraw;
 }
 
-bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
+bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection, bool checkChildren)
 {
 
 	if (this->m_pModel)
@@ -501,11 +587,15 @@ bool Scene_Node::CheckCollisionRay(xyz* rayPos, xyz* rayDirection)
 		}
 	}
 
-	for (unsigned int i = 0; i< m_children.size(); i++)
+	if (checkChildren)
 	{
-		if (m_children[i]->CheckCollisionRay(rayPos, rayDirection))
-			return true;
+		for (unsigned int i = 0; i< m_children.size(); i++)
+		{
+			if (m_children[i]->CheckCollisionRay(rayPos, rayDirection, checkChildren))
+				return true;
+		}
 	}
+	
 
 	return false;
 }

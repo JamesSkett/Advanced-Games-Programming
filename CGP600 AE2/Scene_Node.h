@@ -59,7 +59,7 @@ public:
 	void setCanCollide(bool canCollide);
 	void setCanDraw(bool canDraw);
 
-	bool CheckCollisionRay(xyz* rayPos, xyz* rayDirection);
+	bool CheckCollisionRay(xyz* rayPos, xyz* rayDirection, bool checkChildren);
 
 private:
 	Mesh* m_pModel;
