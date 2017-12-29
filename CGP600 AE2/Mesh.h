@@ -69,6 +69,7 @@ public:
 	float GetBoundingSphere_x();
 	float GetBoundingSphere_y();
 	float GetBoundingSphere_z();
+	bool GetIsSkyBox();
 	ObjFileModel* GetObject();
 
 	//use these to move scale and rotate object
@@ -90,7 +91,10 @@ public:
 
 	bool CheckCollision(Mesh* targetMesh);
 
-private:
+	bool m_isSkyBox = false;
+
+
+protected:
 	//Variables used to initialise graphics
 	ID3D11Device*        m_pD3D11Device;
 	ID3D11DeviceContext* m_pImmediateContext;
@@ -109,6 +113,11 @@ private:
 	XMVECTOR m_directional_light_colour;
 	XMVECTOR m_ambient_light_colour;
 
+	ID3D11RasterizerState* m_pRasterSolid = 0;
+	ID3D11RasterizerState* m_pRasterSkyBox = 0;
+	ID3D11DepthStencilState* m_pDepthWriteSolid = 0;
+	ID3D11DepthStencilState* m_pDepthWriteSkyBox = 0;
+
 	float m_dx, m_dy, m_dz;
 
 	float m_x, m_y, m_z;
@@ -117,6 +126,7 @@ private:
 
 	float m_bounding_sphere_centre_x, m_bounding_sphere_centre_y, m_bounding_sphere_centre_z;
 	float m_bounding_sphere_radius;
+
 
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();

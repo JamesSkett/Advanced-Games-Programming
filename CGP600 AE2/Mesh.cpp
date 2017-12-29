@@ -14,17 +14,6 @@ Mesh::Mesh(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 	m_yangle = 0.0f;
 	m_zangle = 0.0f;
 	m_scale = 1.0f;
-
-	m_dx = sin(XMConvertToRadians(m_xangle));
-	m_dz = cos(XMConvertToRadians(m_zangle));
-	m_dy = tan(XMConvertToRadians(m_yangle));
-
-	xyz xyz1 = { 1, 2, 3 };
-	xyz xyz2 = { 3, 4, 1 };
-	xyz xyz3 = { 4, 5, 6 };
-
-	Plane dot1 = math.PlaneVal(&xyz1, &xyz2, &xyz3);
-	float planeVal = math.CalculatePlaneValForPoint(&dot1, &xyz1);
 }
 
 Mesh::~Mesh()
@@ -37,6 +26,11 @@ Mesh::~Mesh()
 	if (m_pPShader)  m_pPShader->Release();
 	if (m_pTexture)     m_pTexture->Release();
 	//if (m_pSampler0)     m_pSampler0->Release();
+
+	if (m_pRasterSolid != 0) m_pRasterSolid->Release();
+	if (m_pRasterSkyBox != 0) m_pRasterSkyBox->Release();
+	if (m_pDepthWriteSolid != 0) m_pDepthWriteSolid->Release();
+	if (m_pDepthWriteSkyBox != 0) m_pDepthWriteSkyBox->Release();
 
 	if (m_pConstantBuffer)  m_pConstantBuffer->Release();
 	//if (m_pImmediateContext) m_pImmediateContext->Release();
@@ -67,6 +61,8 @@ int Mesh::LoadObjModel(char* fileName)
 	{
 		return hr;
 	}
+
+	
 
 	// Load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
 	ID3DBlob *VS, *PS, *error;
@@ -151,7 +147,12 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture);
 
+	
 	m_pObject->Draw();
+	
+
+
+	
 
 }
 
@@ -260,6 +261,11 @@ float Mesh::GetBoundingSphere_z()
 	return m_bounding_sphere_centre_z;
 }
 
+bool Mesh::GetIsSkyBox()
+{
+	return m_isSkyBox;
+}
+
 ObjFileModel* Mesh::GetObject()
 {
 	return m_pObject;
@@ -346,6 +352,7 @@ XMVECTOR Mesh::GetBoundingSphereWorldSpacePosition()
 
 bool Mesh::CheckCollision(Mesh * targetMesh)
 {
+
 	if (this == targetMesh)
 		return false;
 
