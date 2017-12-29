@@ -26,11 +26,22 @@ public:
 	~Camera();
 
 	//Functions to manipulate the camera
-	void Rotate(float number_of_degrees);
+	void Rotate(float number_of_degrees, float objectX, float objectY, float objectZ);
 	void Forward(float distance, Scene_Node* rootNode);
 	void Up(float distance);
 	void Strafe(float distance);
 	void Pitch(float number_of_degrees);
+
+	//setters
+	void SetX(float x);
+	void SetY(float y);
+	void SetZ(float z);
+	void SetYaw(float angle);
+	void SetPitch(float angle);
+	void SetIsForward(bool isForward);
+	void SetIsBackward(bool isBackward);
+	void SetIsRight(bool isRight);
+	void SetIsLeft(bool isLeft);
 
 	//get the x,y,z positions of the camera
 	float GetX();
@@ -50,7 +61,24 @@ private:
 	float m_x, m_y, m_z;
 	float m_dx, m_dy, m_dz;
 	float m_camera_rotation;
+	float m_camPitch = 0.0f;
+	float m_camYaw = 0.0f;
+	float m_moveLeftRight = 0.0f;
+	float m_moveBackForward = 0.0f;
 
-	XMVECTOR m_position, m_lookat, m_up, m_right, m_forward;
+	XMVECTOR m_position = XMVectorSet(0.0f, 0.0f, -0.5f, 0.0f);
+	XMVECTOR m_lookat;
+	XMVECTOR m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMVECTOR m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR m_forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR m_right = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+
+	XMMATRIX m_camRotationMatrix;
+	XMMATRIX m_groundWorld;
+
+	//Used for changing direction camera is facing
+	bool m_isForward, m_isBackward, m_isRight, m_isLeft;
 };
 
