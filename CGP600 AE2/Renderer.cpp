@@ -9,6 +9,7 @@ ID3D11Device*           Renderer::m_pD3DDevice;
 ID3D11DeviceContext*    Renderer::m_pImmediateContext;
 
 Camera* Renderer::camera;
+SkyBox* Renderer::skyBox;
 
 Renderer::Renderer()
 {
@@ -179,6 +180,8 @@ HRESULT Renderer::InitialiseD3D()
 	m_pImmediateContext->OMSetRenderTargets(1, &m_pBackBufferRTView, m_pzBuffer);
 
 
+	
+
 
 	// Set the viewport
 	D3D11_VIEWPORT viewport;
@@ -225,6 +228,9 @@ void Renderer::ShutdownD3D()
 
 void Renderer::RenderFrame(Scene_Node* rootNode)
 {
+	//InitialiseGraphics();
+
+	
 
 	// Clear the back buffer - choose a colour you like
 	float rgba_clear_colour[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -240,29 +246,14 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
 	view = camera->GetViewMatrix();
 
+	skyBox->SetXPos(camera->GetX());
+	skyBox->SetYPos(camera->GetY());
+	skyBox->SetZPos(camera->GetZ());
+
 	rootNode->Execute(&identity, &view, &projection);
+	skyBox->Draw(&view, &projection);
 
 	// RENDER HERE
-
-	/*XMMATRIX identity, projection, view;
-
-	identity = XMMatrixIdentity();
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 1.0f, 100.0f);
-	view = camera->GetViewMatrix();*/
-
-	//mesh->SetYAngle(degrees2);
-	//mesh->Lookat_XZ(camera->GetX(), camera->GetY(), camera->GetZ());
-	//mesh2->Lookat_XZ(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
-
-	//camera->CameraFollow(mesh->GetXPos(), mesh->GetYPos(), mesh->GetZPos());
-	//camera->LookAt(mesh->GetXPos(), mesh->GetZPos());
-
-	//mesh->Draw(&view, &projection);
-	//mesh2->Draw(&view, &projection);
-
-	//bool isColliding = mesh->CheckCollision(mesh2);
-
-	
 
 	// Select which primitive type to use //03-01
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -275,8 +266,13 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 
 HRESULT Renderer::InitialiseGraphics(void)
 {
-	camera = new Camera(0.0f, 0.0f, 0.0f, 0.0f);
 	
+	camera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
+
+	skyBox = new SkyBox(m_pD3DDevice, m_pImmediateContext);
+	skyBox->LoadObjModel("assets/cube.obj");
+	skyBox->AddTexture("assets/stars.bmp");
+	skyBox->SetScale(50.0f);
 
 	return S_OK;
 }
@@ -301,6 +297,19 @@ HRESULT Renderer::InitialiseInput()
 	hr = m_keyboard_device->Acquire();
 	if (FAILED(hr)) return hr;
 
+	//create mouse
+	hr = m_direct_input->CreateDevice(GUID_SysMouse, &m_mouse_device, NULL);
+	if (FAILED(hr)) return hr;
+
+	hr = m_mouse_device->SetCooperativeLevel(m_hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	hr = m_mouse_device->SetDataFormat(&c_dfDIMouse);
+	if (FAILED(hr)) return hr;
+
+	hr = m_mouse_device->Acquire();
+	if (FAILED(hr)) return hr;
+
 
 	return S_OK;
 }
@@ -309,13 +318,17 @@ void Renderer::ReadInputState()
 {
 	HRESULT hr;
 
+
 	hr = m_keyboard_device->GetDeviceState(sizeof(m_keyboard_keys_state), (LPVOID)&m_keyboard_keys_state);
+
+	hr = m_mouse_device->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrState);
 
 	if (FAILED(hr))
 	{
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			m_keyboard_device->Acquire();
+			m_mouse_device->Acquire();
 		}
 	}
 }

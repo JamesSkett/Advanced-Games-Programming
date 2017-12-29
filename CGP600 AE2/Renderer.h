@@ -13,6 +13,7 @@ using namespace DirectX;
 #include "text2D.h"
 #include "Mesh.h"
 #include "Scene_Node.h"
+#include "SkyBox.h"
 
 __declspec(align(16)) class Renderer
 {
@@ -41,10 +42,12 @@ public:
 	bool IsKeyPressed(unsigned char DI_keycode);
 
 	static Camera* camera;
-	
+	static SkyBox* skyBox;
 	
 	static ID3D11Device*           m_pD3DDevice;
 	static ID3D11DeviceContext*    m_pImmediateContext;
+
+	DIMOUSESTATE mouseCurrState;
 
 private:
 	
@@ -67,6 +70,8 @@ private:
 	ID3D11Buffer*			m_pConstantBuffer0;
 
 	ID3D11DepthStencilView* m_pzBuffer;
+	ID3D11ShaderResourceView* m_pTexture0;
+	ID3D11SamplerState* m_pSampler0;
 	
 
 	XMVECTOR g_directional_light_shines_from;
@@ -76,6 +81,7 @@ private:
 
 	IDirectInput8* m_direct_input;
 	IDirectInputDevice8* m_keyboard_device;
+	IDirectInputDevice8* m_mouse_device;
 	unsigned char m_keyboard_keys_state[256];
 
 	
