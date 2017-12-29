@@ -9,6 +9,10 @@ Scene_Node::Scene_Node()
 	m_x = 0.0f; m_y = 0.0f; m_z = 0.0f;
 	m_xangle = 0.0f; m_yangle = 0.0f; m_zangle = 0.0f;
 	m_scale = 1.0f;
+
+	m_dx = sinf(XMConvertToRadians(m_yangle));
+	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dz = cosf(XMConvertToRadians(m_yangle));
 }
 
 
@@ -387,11 +391,18 @@ bool Scene_Node::CheckCollision(Scene_Node * compareTree, Scene_Node * objectTre
 	// i.e. stop object node and children being checked against each other
 	if (objectTreeRoot == compareTree) return false;
 
+	//bool isSkyBox = compareTree->m_pModel->m_isSkyBox;
+
 	//this is for if you dont want the object to register collisions
 	if (compareTree->m_canCollide == false)
 	{
 		return false;
 	}
+
+	//if (isSkyBox)
+	//{
+		//return false;
+	//}
 
 	//only check if the current node and compare tree both have objects assosiated
 	if (m_pModel && compareTree->m_pModel)
