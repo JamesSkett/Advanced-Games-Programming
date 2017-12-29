@@ -30,16 +30,15 @@ public:
 private:
 	Renderer* renderer;
 
-	Mesh* mesh;
+	Mesh* m_spaceShip;
 	Mesh* mesh2;
-	//Mesh* cameraMesh;
+	Mesh* m_cameraMesh;
 
 	Scene_Node* m_root_node;
 
-	Scene_Node* m_node1;
+	Scene_Node* m_spaceship_node;
 	Scene_Node* m_node2;
-	//Scene_Node* m_camera_node;
-	//Scene_Node* m_node3;
+	Scene_Node* m_camera_node;
 
 };
 
