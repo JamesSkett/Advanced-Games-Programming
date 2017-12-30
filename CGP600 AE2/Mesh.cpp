@@ -33,6 +33,7 @@ Mesh::~Mesh()
 	if (m_pDepthWriteSkyBox != 0) m_pDepthWriteSkyBox->Release();
 
 	if (m_pConstantBuffer)  m_pConstantBuffer->Release();
+	if (cbPerFrameBuffer) cbPerFrameBuffer->Release();
 	//if (m_pImmediateContext) m_pImmediateContext->Release();
 	//if (m_pD3D11Device)        m_pD3D11Device->Release();
 }
@@ -46,14 +47,18 @@ int Mesh::LoadObjModel(char* fileName)
 
 	if (m_pObject->filename == "FILE NOT LOADED") return S_FALSE;
 
+	
+
 	HRESULT hr = S_OK;
 	// Create constant buffer
 	D3D11_BUFFER_DESC constant_buffer_desc;
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
 
 	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;	// Can use UpdateSubresource() to update
-	constant_buffer_desc.ByteWidth = 112;  // Must Be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.ByteWidth = sizeof(MODEL_CONSTANT_BUFFER);  // Must Be a multiple of 16, calculate from CB struct
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Use as a constant buffer
+	constant_buffer_desc.CPUAccessFlags = 0;
+	constant_buffer_desc.MiscFlags = 0;
 
 	hr = m_pD3D11Device->CreateBuffer(&constant_buffer_desc, NULL, &m_pConstantBuffer);
 
@@ -62,10 +67,23 @@ int Mesh::LoadObjModel(char* fileName)
 		return hr;
 	}
 
-	
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;	// Can use UpdateSubresource() to update
+	constant_buffer_desc.ByteWidth = sizeof(cbPerFrame);  // Must Be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Use as a constant buffer
+	constant_buffer_desc.CPUAccessFlags = 0;
+	constant_buffer_desc.MiscFlags = 0;
+
+	hr = m_pD3D11Device->CreateBuffer(&constant_buffer_desc, NULL, &cbPerFrameBuffer);
+
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 
 	// Load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
-	ID3DBlob *VS, *PS, *error;
+	ID3DBlob *VS, *PS, *D2D_PS, *error;
 	hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "ModelVS", "vs_4_0", 0, 0, 0, &VS, &error, 0);
 
 	if (error != 0)
@@ -84,6 +102,15 @@ int Mesh::LoadObjModel(char* fileName)
 		if (FAILED(hr)) exit(0);
 	}
 
+	hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "D2D_PS", "ps_4_0", 0, 0, 0, &D2D_PS, &error, 0);
+
+	if (error != 0)
+	{
+		OutputDebugStringA((char*)error->GetBufferPointer());
+		error->Release();
+		if (FAILED(hr)) exit(0);
+	}
+
 	// Create shader objects
 	hr = m_pD3D11Device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &m_pVShader);
 	if (FAILED(hr)) exit(0);
@@ -91,12 +118,19 @@ int Mesh::LoadObjModel(char* fileName)
 	hr = m_pD3D11Device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_pPShader);
 	if (FAILED(hr)) exit(0);
 
+	hr = m_pD3D11Device->CreatePixelShader(D2D_PS->GetBufferPointer(), D2D_PS->GetBufferSize(), NULL, &m_D2D_PS);
+	if (FAILED(hr)) exit(0);
+
+	light.dir = XMFLOAT3(0.25f, 0.5f, -1.0f);
+	light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
+
 	D3D11_INPUT_ELEMENT_DESC iedesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0,    0,                            D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		//{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0,    D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0,    20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 
 	};
 
@@ -115,28 +149,19 @@ int Mesh::LoadObjModel(char* fileName)
 
 void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 {
-	m_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-
-	m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-
-	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
-
 	CalculateModelCentrePoint();
 	CalculateBoundingSphereRadius();
 
-	XMMATRIX transpose;
+	XMMATRIX WVP;
+
+	WVP = (*world) * (*view) * (*projection);
+
 	MODEL_CONSTANT_BUFFER model_cb_values;
-	model_cb_values.WorldViewProjection = (*world) * (*view) * (*projection);
+	model_cb_values.WorldViewProjection = XMMatrixTranspose(WVP);
 
+	model_cb_values.World = XMMatrixTranspose(*world);
 
-	transpose = XMMatrixTranspose((*world)); // model world matrix
-
-
-	model_cb_values.directional_light_colour = m_directional_light_colour;
-	model_cb_values.ambient_light_colour = m_ambient_light_colour;
-	model_cb_values.directional_light_vector = DirectX::XMVector3Transform(m_directional_light_shines_from, transpose);
-	model_cb_values.directional_light_vector = DirectX::XMVector3Normalize(model_cb_values.directional_light_vector);
-
+	
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
 
@@ -144,10 +169,17 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 
 	m_pImmediateContext->VSSetShader(m_pVShader, 0, 0);
 	m_pImmediateContext->PSSetShader(m_pPShader, 0, 0);
+	m_pImmediateContext->PSSetShader(m_D2D_PS, 0, 0);
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture);
 
-	
+	constBuffPerFrame.light = light;
+	m_pImmediateContext->UpdateSubresource(cbPerFrameBuffer, 0, NULL, &constBuffPerFrame, 0, 0);
+	m_pImmediateContext->PSSetConstantBuffers(0, 1, &cbPerFrameBuffer);
+
+	m_pImmediateContext->VSSetShader(m_pVShader, 0, 0);
+	m_pImmediateContext->PSSetShader(m_pPShader, 0, 0);
+
 	m_pObject->Draw();
 	
 

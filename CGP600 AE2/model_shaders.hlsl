@@ -1,9 +1,19 @@
 cbuffer CB0
 {
 	matrix WVPMatrix; //64 bytes
-	float4 directional_light_vector;	// 16 bytes
-	float4 directional_light_colour;	// 16 bytes
-	float4 ambient_light_colour;
+	matrix World;
+}
+
+struct Light
+{
+	float3 dir;
+	float4 ambient;
+	float4 diffuse;
+};
+
+cbuffer cbPerFrame
+{
+	Light light;
 };
 
 Texture2D texture0;
@@ -12,27 +22,40 @@ SamplerState sampler0;
 struct VOut
 {
 	float4 position : SV_POSITION;
-	float4 color : COLOR;
 	float2 texcoord : TEXCOORD;
+	float3 normal : NORMAL;
 };
 
 VOut ModelVS(float4 position : POSITION, float2 texcoord : TEXCOORD, float3 normal : NORMAL)
 {
 	VOut output;
 
-	float4 default_color = { 1,1,1,1 };
+	output.position = mul(position, WVPMatrix);
 
-	output.position = mul(WVPMatrix, position);
-	float diffuse_amount = dot(directional_light_vector, normal);
-	diffuse_amount = saturate(diffuse_amount);
-	output.color = ambient_light_colour + (directional_light_colour * diffuse_amount);
+	output.normal = mul(normal, World);
 
 	output.texcoord = texcoord;
 
 	return output;
 }
 
-float4 ModelPS(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET
+float4 ModelPS(VOut input) : SV_TARGET
 {
-	return texture0.Sample(sampler0, texcoord) * color;
+	input.normal = normalize(input.normal);
+
+	float4 diffuse = texture0.Sample(sampler0, input.texcoord);
+
+	float3 finalColor;
+
+	finalColor = diffuse * light.ambient;
+	finalColor += saturate(dot(light.dir, input.normal) * light.diffuse * diffuse);
+
+	return float4(finalColor, diffuse.a);
+}
+
+float4 D2D_PS(VOut input) : SV_TARGET
+{
+	float4 diffuse = texture0.Sample(sampler0, input.texcoord);
+
+	return diffuse;
 }

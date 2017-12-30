@@ -15,10 +15,28 @@ using namespace DirectX;
 struct MODEL_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
-	XMVECTOR directional_light_vector;	// 16 bytes
-	XMVECTOR directional_light_colour;	// 16 bytes
-	XMVECTOR ambient_light_colour;	// 16 bytes
+	XMMATRIX World;
 };
+
+struct Light
+{
+	Light()
+	{
+		ZeroMemory(this, sizeof(Light));
+	}
+
+	XMFLOAT3 dir;
+	float pad;
+	XMFLOAT4 ambient;
+	XMFLOAT4 diffuse;
+};
+
+
+struct cbPerFrame
+{
+	Light light;
+};
+
 
 __declspec(align(16)) class Mesh
 {
@@ -102,6 +120,7 @@ protected:
 	ObjFileModel*		 m_pObject;
 	ID3D11VertexShader*  m_pVShader;
 	ID3D11PixelShader*	 m_pPShader;
+	ID3D11PixelShader*	 m_D2D_PS;
 	ID3D11InputLayout*	 m_pInputLayout;
 	ID3D11Buffer*		 m_pConstantBuffer;
 
@@ -109,9 +128,9 @@ protected:
 	ID3D11SamplerState* m_pSampler0;
 
 	//lighting variables
-	XMVECTOR m_directional_light_shines_from;
-	XMVECTOR m_directional_light_colour;
-	XMVECTOR m_ambient_light_colour;
+	ID3D11Buffer* cbPerFrameBuffer;
+	Light light;
+	cbPerFrame constBuffPerFrame;
 
 	ID3D11RasterizerState* m_pRasterSolid = 0;
 	ID3D11RasterizerState* m_pRasterSkyBox = 0;

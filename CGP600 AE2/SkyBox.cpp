@@ -145,11 +145,11 @@ int SkyBox::LoadObjModel(char * fileName)
 
 void SkyBox::Draw(XMMATRIX * view, XMMATRIX * projection)
 {
-	m_directional_light_shines_from = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	//m_directional_light_shines_from = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 
-	m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	//m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 
-	m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
+	//m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
 	XMMATRIX world , transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
@@ -165,11 +165,6 @@ void SkyBox::Draw(XMMATRIX * view, XMMATRIX * projection)
 	model_cb_values.WorldViewProjection = world * (*view) * (*projection);
 
 	transpose = XMMatrixTranspose(world); // model world matrix
-
-	model_cb_values.directional_light_colour = m_directional_light_colour;
-	model_cb_values.ambient_light_colour = m_ambient_light_colour;
-	model_cb_values.directional_light_vector = DirectX::XMVector3Transform(m_directional_light_shines_from, transpose);
-	model_cb_values.directional_light_vector = DirectX::XMVector3Normalize(model_cb_values.directional_light_vector);
 
 	// upload the new values for the constant buffer
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
