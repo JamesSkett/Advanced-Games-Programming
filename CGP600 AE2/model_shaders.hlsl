@@ -1,8 +1,8 @@
 cbuffer CB0
 {
 	matrix WVPMatrix; //64 bytes
-	matrix World;
-}
+	matrix World; //64 bytes
+} //128 bytes
 
 struct Light
 {
