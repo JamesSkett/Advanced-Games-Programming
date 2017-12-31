@@ -4,6 +4,7 @@
 
 SkyBox::SkyBox(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext) : Mesh(D3D11Device, ImmediateContext)
 {
+	
 }
 
 

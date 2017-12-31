@@ -3,7 +3,7 @@
 // constructor does not handle fails gracefully for simplicity, simply exits
 // track errors by looking at debug output or using debugger
 // scope for more advanced code to improve error handling
-Text2D::Text2D(string filename, ID3D11Device* device, ID3D11DeviceContext* context)
+Text2D::Text2D(char* filename, ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	pD3DDevice = device;
 	pImmediateContext = context;
@@ -58,7 +58,7 @@ Text2D::Text2D(string filename, ID3D11Device* device, ID3D11DeviceContext* conte
 	if(FAILED(hr)) exit(0);
 
 	// Load in the font texture from given filename
-	hr = D3DX11CreateShaderResourceViewFromFile(pD3DDevice, filename.c_str(),NULL, NULL, &pTexture,NULL); 
+	hr = D3DX11CreateShaderResourceViewFromFile(pD3DDevice, filename,NULL, NULL, &pTexture,NULL); 
 	if(FAILED(hr)) exit(0);
 	
 	// Create sampler for texture

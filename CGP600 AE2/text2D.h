@@ -54,7 +54,7 @@ private:
 	ID3D11DepthStencilState* pDepthDisabledStencilState;	// state to turn off Z buffer
 
 public:
-	Text2D(string filename, ID3D11Device* device, ID3D11DeviceContext* context); // pass in filename of font, device and context
+	Text2D(char* filename, ID3D11Device* device, ID3D11DeviceContext* context); // pass in filename of font, device and context
 	~Text2D(void);
 
 	// add a string with position and size to the list

@@ -11,6 +11,7 @@ using namespace DirectX;
 #include "Scene_Node.h"
 #include "Mesh.h"
 #include "Math.h"
+#include "text2D.h"
 
 class GameSystem
 {
@@ -32,13 +33,14 @@ private:
 
 	Mesh* m_spaceShip;
 	Mesh* mesh2;
-	Mesh* m_cameraMesh;
+	Mesh* m_shipGun1;
 
 	Scene_Node* m_root_node;
 
 	Scene_Node* m_spaceship_node;
 	Scene_Node* m_node2;
-	Scene_Node* m_camera_node;
+	Scene_Node* m_shipGun1_node;
 
+	Text2D* text;
 };
 

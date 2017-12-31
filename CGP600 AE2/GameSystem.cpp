@@ -114,6 +114,7 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 			//Renderer::camera->SetY(m_camera_node->GetYPos());
 			Renderer::camera->CameraFollow(m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
 			
+
 			renderer->RenderFrame(m_root_node);
 
 
@@ -131,46 +132,43 @@ void GameSystem::SetupLevel()
 	m_spaceShip->LoadObjModel("assets/spaceship.obj");
 	m_spaceShip->AddTexture("assets/Spaceship_D.bmp");
 
+	m_shipGun1 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	m_shipGun1->LoadObjModel("assets/ShipGun.obj");
+	m_shipGun1->AddTexture("assets/Spaceship_D.bmp");
+
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/sphere.obj");
 	mesh2->AddTexture("assets/texture.bmp");
 
-	m_cameraMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	m_cameraMesh->LoadObjModel("assets/cube.obj");
-	m_cameraMesh->AddTexture("assets/texture.bmp");
-
 	m_root_node = new Scene_Node();
 	m_spaceship_node = new Scene_Node();
 	m_node2 = new Scene_Node();
-	m_camera_node = new Scene_Node();
+	m_shipGun1_node = new Scene_Node();
+
+	text = new Text2D("assets/font1.bmp", Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	text->AddText("HELLO WORLD!", 0.0f, 0.0f, 0.2f);
+	text->RenderText();
+
 
 	m_spaceship_node->SetModel(m_spaceShip);
 	m_node2->SetModel(mesh2);
-	m_camera_node->SetModel(m_cameraMesh);
-	//g_node3->SetModel(mesh);
+	m_shipGun1_node->SetModel(m_shipGun1);
 
 	m_root_node->AddChildNode(m_spaceship_node);
-	m_root_node->AddChildNode(m_node2);
-	m_spaceship_node->AddChildNode(m_camera_node);
+	m_spaceship_node->AddChildNode(m_node2);
+	m_spaceship_node->AddChildNode(m_shipGun1_node);
 	//m_node1->AddChildNode(m_node2);
 	//g_node2->AddChildNode(g_node3);
 
 	m_spaceship_node->SetScale(0.1f);
-	m_node2->SetScale(0.1f);
+	m_node2->SetScale(1.0f);
 	m_spaceship_node->SetZPos(10.0f);
-	m_node2->SetZPos(3.1f);
-	m_node2->SetXPos(5.0f);
+	m_node2->SetZPos(-30.1f);
+	m_node2->SetXPos(70.0f);
 	m_spaceship_node->SetXPos(0.0f);
-	//m_camera_node->SetScale(0.1f);
-	m_camera_node->SetZPos(-0.0f);
-	m_camera_node->setCanCollide(false);
 
-	// set camera node to the position of the camera
-	//m_camera_node->SetXPos(Renderer::camera->GetX());
-	//m_camera_node->SetYPos(Renderer::camera->GetY());
-	//m_camera_node->SetZPos(Renderer::camera->GetZ());
-
-
+	m_shipGun1_node->SetXPos(-10.0f);
+	m_shipGun1_node->SetZPos(10.0f);
 
 	XMMATRIX identity = XMMatrixIdentity();
 
@@ -267,7 +265,8 @@ void GameSystem::GetKeyboardInput()
 	//Renderer::camera->Strafe(-renderer->mouseCurrState.lX);
 	//Renderer::camera->Rotate(-renderer->mouseCurrState.lX, m_node1->GetXPos(), m_node1->GetYPos(), m_node1->GetZPos());
 
-	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY, m_root_node);
+	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY * 0.1f, m_root_node);
+	m_spaceship_node->UpdateYangle(renderer->mouseCurrState.lX * 0.1f, m_root_node);
 }
 
 void GameSystem::GetControllerInput()
