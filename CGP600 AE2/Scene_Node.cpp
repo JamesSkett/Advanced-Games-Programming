@@ -161,7 +161,7 @@ bool Scene_Node::UpdateXangle(float angle, Scene_Node* rootNode)
 	m_xangle += angle;
 
 	m_dx = sinf(XMConvertToRadians(m_yangle));
-	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dy = atan(XMConvertToRadians(m_xangle));
 	m_dz = cosf(XMConvertToRadians(m_yangle));
 
 	XMMATRIX identity = XMMatrixIdentity();
@@ -189,7 +189,7 @@ bool Scene_Node::UpdateYangle(float angle, Scene_Node* rootNode)
 	m_yangle += angle;
 
 	m_dx = sinf(XMConvertToRadians(m_yangle));
-	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dy = atan(XMConvertToRadians(m_xangle));
 	m_dz = cosf(XMConvertToRadians(m_yangle));
 
 	XMMATRIX identity = XMMatrixIdentity();
@@ -217,7 +217,7 @@ bool Scene_Node::UpdateZangle(float angle, Scene_Node* rootNode)
 	m_zangle += angle;
 
 	m_dx = sinf(XMConvertToRadians(m_yangle));
-	//m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dy = atan(XMConvertToRadians(m_xangle));
 	m_dz = cosf(XMConvertToRadians(m_yangle));
 
 	XMMATRIX identity = XMMatrixIdentity();
@@ -245,7 +245,7 @@ bool Scene_Node::MoveForward(float speed, Scene_Node* rootNode)
 	float old_x = m_x;
 
 	m_x += m_dx * speed;
-	//m_y += m_dy * speed;
+	m_y += -m_dy * speed;
 	m_z += m_dz * speed;
 
 	XMMATRIX identity = XMMatrixIdentity();
