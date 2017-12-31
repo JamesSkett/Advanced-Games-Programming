@@ -264,8 +264,10 @@ void GameSystem::GetKeyboardInput()
 		Renderer::camera->Rotate(-0.3f, m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
 	}
 
-	Renderer::camera->Strafe(-renderer->mouseCurrState.lX);
+	//Renderer::camera->Strafe(-renderer->mouseCurrState.lX);
 	//Renderer::camera->Rotate(-renderer->mouseCurrState.lX, m_node1->GetXPos(), m_node1->GetYPos(), m_node1->GetZPos());
+
+	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY, m_root_node);
 }
 
 void GameSystem::GetControllerInput()
