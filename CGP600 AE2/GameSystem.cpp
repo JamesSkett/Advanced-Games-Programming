@@ -1,5 +1,7 @@
 #include "GameSystem.h"
 
+#include <thread>
+
 Math* GameSystem::math;
 
 GameSystem::GameSystem()
@@ -195,6 +197,27 @@ void GameSystem::SetupLevel()
 	m_shipGun2_node->SetZAngle(180.0f);
 	m_shipGun2_node->setCanCollide(false);
 
+	m_bulletMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	m_bulletMesh->LoadObjModel("assets/Bullet.obj");
+	m_bulletMesh->AddTexture("assets/texture.bmp");
+
+	for (int i = 0; i < NUM_OF_BULLETS; i++)
+	{
+		m_shipBullets.push_back(new Projectile(0.00001f));
+	}
+	
+	for (int i = 0; i < m_shipBullets.size() / 2; i++)
+	{
+		m_shipBullets[i]->SetModel(m_bulletMesh);
+		m_shipGun1_node->AddChildNode(m_shipBullets[i]);
+	}
+
+	for (int i = 50; i < m_shipBullets.size() / 2; i++)
+	{
+		m_shipBullets[i]->SetModel(m_bulletMesh);
+		m_shipGun2_node->AddChildNode(m_shipBullets[i]);
+	}
+
 	//XMMATRIX identity = XMMatrixIdentity();
 
 	//m_root_node->UpdateCollisionTree(&identity, 1.0f);
@@ -292,6 +315,29 @@ void GameSystem::GetKeyboardInput()
 
 	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY * 0.1f, m_root_node);
 	m_spaceship_node->UpdateYangle(renderer->mouseCurrState.lX * 0.1f, m_root_node);
+
+	if (renderer->mouseCurrState.rgbButtons[0])
+	{
+		if (!isMousePressed)
+		{
+			thread shootBullet([=]
+			{
+				m_shipBullets[bulletNum]->SetIsFired(true);
+				m_shipBullets[bulletNum]->UpdateProjectile(m_root_node);
+			});
+			shootBullet.detach();
+
+			bulletNum++;
+		}
+		isMousePressed = true;
+
+	}
+
+	if (!renderer->mouseCurrState.rgbButtons[0])
+	{
+		isMousePressed = false;
+
+	}
 }
 
 void GameSystem::GetControllerInput()

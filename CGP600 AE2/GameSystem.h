@@ -14,12 +14,18 @@ using namespace DirectX;
 #include "Mesh.h"
 #include "Math.h"
 #include "text2D.h"
+#include "Projectile.h"
 
 enum ShipGuns
 {
 	NUMBER_OF_GUNS = 2,
 	FRONT_LEFT_GUN = 0,
 	FRONT_RIGHT_GUN = 1
+};
+
+enum ShipBullets
+{
+	NUM_OF_BULLETS = 50,
 };
 
 class GameSystem
@@ -51,6 +57,12 @@ private:
 	Scene_Node* m_shipGun1_node;
 	Scene_Node* m_shipGun2_node;
 
+	Mesh* m_bulletMesh;
+	vector <Projectile*> m_shipBullets;
+
 	Text2D* text;
+
+	int bulletNum = 0;
+	bool isMousePressed = false;
 };
 
