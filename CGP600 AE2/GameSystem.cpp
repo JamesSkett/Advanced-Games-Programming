@@ -34,6 +34,12 @@ GameSystem::~GameSystem()
 		cameraMesh = nullptr;
 	}*/
 
+	for (int i = 0; i < m_shipGuns.size(); i++)
+	{
+		delete m_shipGuns[i];
+		m_shipGuns[i] = nullptr;
+		m_shipGuns.clear();
+	}
 	
 
 	if (m_root_node)
@@ -132,10 +138,19 @@ void GameSystem::SetupLevel()
 	m_spaceShip->LoadObjModel("assets/spaceship.obj");
 	m_spaceShip->AddTexture("assets/Spaceship_D.bmp");
 
-	m_shipGun1 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	m_shipGun1->LoadObjModel("assets/ShipGun.obj");
-	m_shipGun1->AddTexture("assets/Spaceship_D.bmp");
+	//create gun meshes
+	for (int i = 0; i < NUMBER_OF_GUNS; i++)
+	{
+		m_shipGuns.push_back(new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext));
+	}
 
+	//set the gun object and texture
+	for (int i = 0; i < m_shipGuns.size(); i++)
+	{
+		m_shipGuns[i]->LoadObjModel("assets/ShipGun.obj");
+		m_shipGuns[i]->AddTexture("assets/Spaceship_D.bmp");
+	}
+	
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/sphere.obj");
 	mesh2->AddTexture("assets/texture.bmp");
@@ -144,6 +159,7 @@ void GameSystem::SetupLevel()
 	m_spaceship_node = new Scene_Node();
 	m_node2 = new Scene_Node();
 	m_shipGun1_node = new Scene_Node();
+	m_shipGun2_node = new Scene_Node();
 
 	text = new Text2D("assets/font1.bmp", Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	text->AddText("HELLO WORLD!", 0.0f, 0.0f, 0.2f);
@@ -152,27 +168,36 @@ void GameSystem::SetupLevel()
 
 	m_spaceship_node->SetModel(m_spaceShip);
 	m_node2->SetModel(mesh2);
-	m_shipGun1_node->SetModel(m_shipGun1);
+	m_shipGun1_node->SetModel(m_shipGuns[FRONT_LEFT_GUN]);
+	m_shipGun2_node->SetModel(m_shipGuns[FRONT_RIGHT_GUN]);
 
 	m_root_node->AddChildNode(m_spaceship_node);
-	m_spaceship_node->AddChildNode(m_node2);
+	m_root_node->AddChildNode(m_node2);
 	m_spaceship_node->AddChildNode(m_shipGun1_node);
-	//m_node1->AddChildNode(m_node2);
-	//g_node2->AddChildNode(g_node3);
+	m_spaceship_node->AddChildNode(m_shipGun2_node);
+
 
 	m_spaceship_node->SetScale(0.1f);
 	m_node2->SetScale(1.0f);
 	m_spaceship_node->SetZPos(10.0f);
-	m_node2->SetZPos(-30.1f);
-	m_node2->SetXPos(70.0f);
+	m_node2->SetZPos(-3.1f);
+	m_node2->SetXPos(7.0f);
 	m_spaceship_node->SetXPos(0.0f);
 
-	m_shipGun1_node->SetXPos(-10.0f);
-	m_shipGun1_node->SetZPos(10.0f);
+	//Position the guns in the correct position
+	m_shipGun1_node->SetXPos(-15.0f);
+	m_shipGun1_node->SetYPos(-5.0f);
+	m_shipGun1_node->SetZPos(35.0f);
+	m_shipGun1_node->setCanCollide(false);
+	m_shipGun2_node->SetXPos(15.0f);
+	m_shipGun2_node->SetYPos(-5.0f);
+	m_shipGun2_node->SetZPos(35.0f);
+	m_shipGun2_node->SetZAngle(180.0f);
+	m_shipGun2_node->setCanCollide(false);
 
-	XMMATRIX identity = XMMatrixIdentity();
+	//XMMATRIX identity = XMMatrixIdentity();
 
-	m_root_node->UpdateCollisionTree(&identity, 1.0f);
+	//m_root_node->UpdateCollisionTree(&identity, 1.0f);
 }
 
 void GameSystem::GetKeyboardInput()

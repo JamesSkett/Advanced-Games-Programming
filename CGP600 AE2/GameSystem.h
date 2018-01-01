@@ -7,11 +7,20 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
+#include <vector>
+
 #include "Renderer.h"
 #include "Scene_Node.h"
 #include "Mesh.h"
 #include "Math.h"
 #include "text2D.h"
+
+enum ShipGuns
+{
+	NUMBER_OF_GUNS = 2,
+	FRONT_LEFT_GUN = 0,
+	FRONT_RIGHT_GUN = 1
+};
 
 class GameSystem
 {
@@ -33,13 +42,14 @@ private:
 
 	Mesh* m_spaceShip;
 	Mesh* mesh2;
-	Mesh* m_shipGun1;
+	vector <Mesh*> m_shipGuns;
 
 	Scene_Node* m_root_node;
 
 	Scene_Node* m_spaceship_node;
 	Scene_Node* m_node2;
 	Scene_Node* m_shipGun1_node;
+	Scene_Node* m_shipGun2_node;
 
 	Text2D* text;
 };
