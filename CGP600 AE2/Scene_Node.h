@@ -61,7 +61,7 @@ public:
 
 	bool CheckCollisionRay(xyz* rayPos, xyz* rayDirection, bool checkChildren);
 
-private:
+protected:
 	Mesh* m_pModel;
 	ObjFileModel* m_pObject;
 	vector <Scene_Node*> m_children;

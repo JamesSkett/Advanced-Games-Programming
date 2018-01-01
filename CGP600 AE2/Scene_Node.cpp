@@ -295,7 +295,10 @@ bool Scene_Node::DetachNode(Scene_Node * n)
 
 void Scene_Node::Execute(XMMATRIX * world, XMMATRIX * view, XMMATRIX * projection)
 {
-
+	m_dx = sinf(XMConvertToRadians(m_yangle));
+	m_dy = atan(XMConvertToRadians(m_xangle));
+	m_dz = cosf(XMConvertToRadians(m_yangle));
+	
 	//XMMATRIX local_world = DirectX::XMMatrixIdentity();
 
 	m_local_world_matrix = DirectX::XMMatrixRotationX(XMConvertToRadians(m_xangle));
