@@ -272,7 +272,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	skyBox = new SkyBox(m_pD3DDevice, m_pImmediateContext);
 	skyBox->LoadObjModel("assets/cube.obj");
 	skyBox->AddTexture("assets/spaceMap.dds");
-	skyBox->SetScale(50.0f);
+	skyBox->SetScale(55.0f);
 
 	return S_OK;
 }
