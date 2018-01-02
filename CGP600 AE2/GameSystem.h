@@ -60,7 +60,7 @@ private:
 	Mesh* m_bulletMesh;
 	vector <Projectile*> m_shipBullets;
 
-	Text2D* text;
+	//Text2D* text;
 
 	int bulletNum = 0;
 	bool isMousePressed = false;

@@ -253,6 +253,9 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	rootNode->Execute(&identity, &view, &projection);
 	skyBox->Draw(&view, &projection);
 
+	text->AddText("Health: ", -1.0f, 1.0f, 0.1f);
+	text->RenderText();
+
 	// RENDER HERE
 
 	// Select which primitive type to use //03-01
@@ -273,6 +276,8 @@ HRESULT Renderer::InitialiseGraphics(void)
 	skyBox->LoadObjModel("assets/cube.obj");
 	skyBox->AddTexture("assets/spaceMap.dds");
 	skyBox->SetScale(55.0f);
+
+	text = new Text2D("assets/font1.bmp", m_pD3DDevice, m_pImmediateContext);
 
 	return S_OK;
 }

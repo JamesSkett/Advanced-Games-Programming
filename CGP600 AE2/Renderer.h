@@ -84,7 +84,7 @@ private:
 	IDirectInputDevice8* m_mouse_device;
 	unsigned char m_keyboard_keys_state[256];
 
-	
+	Text2D* text;
 	
 };
 

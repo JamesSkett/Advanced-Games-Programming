@@ -163,9 +163,9 @@ void GameSystem::SetupLevel()
 	m_shipGun1_node = new Scene_Node();
 	m_shipGun2_node = new Scene_Node();
 
-	text = new Text2D("assets/font1.bmp", Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	/*text = new Text2D("assets/font1.bmp", Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	text->AddText("HELLO WORLD!", 0.0f, 0.0f, 0.2f);
-	text->RenderText();
+	text->RenderText();*/
 
 
 	m_spaceship_node->SetModel(m_spaceShip);
