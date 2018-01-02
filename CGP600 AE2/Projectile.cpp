@@ -18,6 +18,10 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 	{
 		m_isFired = false;
 
+		m_localDirX = sinf(XMConvertToRadians(m_yangle));
+		m_localDirY = atan(XMConvertToRadians(m_xangle));
+		m_localDirZ = cosf(XMConvertToRadians(m_yangle));
+
 		xyz startPos = { m_x, m_y, m_z };
 		xyz currentPos;
 		float distance;
@@ -48,8 +52,8 @@ void Projectile::SetIsFired(bool isFired)
 void Projectile::MoveForward(float speed)
 {
 
-	m_x += m_dx * speed;
-	m_y += -m_dy * speed;
-	m_z += m_dz * speed;
+	m_x += m_localDirX * speed;
+	m_y += -m_localDirY * speed;
+	m_z += m_localDirZ * speed;
 
 }

@@ -16,5 +16,9 @@ public:
 private:
 	bool m_isFired = false;
 	float m_velocity;
+
+	float m_localDirX;
+	float m_localDirY;
+	float m_localDirZ;
 };
 

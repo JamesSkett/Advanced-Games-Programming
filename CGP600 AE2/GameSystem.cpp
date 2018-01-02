@@ -320,10 +320,30 @@ void GameSystem::GetKeyboardInput()
 	{
 		if (!isMousePressed)
 		{
+			xyz bulletPos = { m_spaceship_node->GetXPos() + m_shipGun1_node->GetXPos() + m_shipBullets[bulletNum]->GetXPos(),
+							  m_spaceship_node->GetYPos() + m_shipGun1_node->GetYPos() + m_shipBullets[bulletNum]->GetYPos(),
+							  m_spaceship_node->GetZPos() + m_shipGun1_node->GetZPos() + m_shipBullets[bulletNum]->GetZPos() };
+
+			m_shipGun1_node->DetachNode(m_shipBullets[bulletNum]);
+			m_root_node->AddChildNode(m_shipBullets[bulletNum]);
+			m_shipBullets[bulletNum]->SetIsFired(true);
+
+			
+
+			float bulletScale = m_spaceShip->GetScale() - m_shipGun1_node->GetScale();
+
+			m_shipBullets[bulletNum]->SetXPos(bulletPos.x);
+			m_shipBullets[bulletNum]->SetYPos(bulletPos.y);
+			m_shipBullets[bulletNum]->SetZPos(bulletPos.z);
+			m_shipBullets[bulletNum]->SetScale(bulletScale);
+
 			thread shootBullet([=]
 			{
-				m_shipBullets[bulletNum]->SetIsFired(true);
-				m_shipBullets[bulletNum]->UpdateProjectile(m_root_node);
+				if (!m_shipBullets[bulletNum]->UpdateProjectile(m_root_node))
+				{
+					m_root_node->DetachNode(m_shipBullets[bulletNum]);
+					m_shipGun1_node->AddChildNode(m_shipBullets[bulletNum]);
+				}
 			});
 			shootBullet.detach();
 
@@ -337,6 +357,11 @@ void GameSystem::GetKeyboardInput()
 	{
 		isMousePressed = false;
 
+	}
+
+	if (renderer->IsKeyPressed(DIK_SPACE))
+	{
+		m_spaceship_node->DetachNode(m_shipGun1_node);
 	}
 }
 
