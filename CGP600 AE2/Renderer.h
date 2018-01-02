@@ -3,6 +3,7 @@
 #include <d3dx11.h>
 #include <dxerr.h>
 #include <dinput.h>
+#include <sstream>
 
 
 #include <DirectXMath.h>
@@ -14,6 +15,7 @@ using namespace DirectX;
 #include "Mesh.h"
 #include "Scene_Node.h"
 #include "SkyBox.h"
+#include "Time.h"
 
 __declspec(align(16)) class Renderer
 {
@@ -43,7 +45,8 @@ public:
 
 	static Camera* camera;
 	static SkyBox* skyBox;
-	
+	static Time time;
+
 	static ID3D11Device*           m_pD3DDevice;
 	static ID3D11DeviceContext*    m_pImmediateContext;
 
@@ -85,6 +88,7 @@ private:
 	unsigned char m_keyboard_keys_state[256];
 
 	Text2D* text;
-	
+	int m_fps = 0;
+	stringstream m_FPS;
 };
 

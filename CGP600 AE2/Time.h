@@ -1,0 +1,28 @@
+#pragma once
+#include <time.h>
+#include <d3d11.h>
+#include <d3dx11.h>
+#include <dxerr.h>
+
+class Time
+{
+public:
+	Time();
+	~Time();
+
+	void StartTimer();
+	double GetTime();
+	double GetFrameTime();
+	int GetFPS();
+
+private:
+	double countsPerSecond = 0.0;
+	__int64 CounterStart = 0;
+
+	int frameCount = 0;
+	int fps = 0;
+
+	__int64 frameTimeOld = 0;
+	double deltaTime;
+};
+

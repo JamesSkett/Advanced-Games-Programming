@@ -147,6 +147,7 @@
     <ClCompile Include="Scene_Node.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="text2D.cpp" />
+    <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Scene_Node.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="text2D.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="model_shaders.hlsl" />

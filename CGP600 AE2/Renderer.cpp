@@ -10,6 +10,7 @@ ID3D11DeviceContext*    Renderer::m_pImmediateContext;
 
 Camera* Renderer::camera;
 SkyBox* Renderer::skyBox;
+Time Renderer::time;
 
 Renderer::Renderer()
 {
@@ -253,7 +254,11 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	rootNode->Execute(&identity, &view, &projection);
 	skyBox->Draw(&view, &projection);
 
-	text->AddText("Health: ", -1.0f, 1.0f, 0.1f);
+	m_fps = time.GetFPS();
+
+	m_FPS << "FPS " << m_fps;
+
+	text->AddText(m_FPS.str().c_str(), -1.0f, 1.0f, 0.1f);
 	text->RenderText();
 
 	// RENDER HERE
