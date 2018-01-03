@@ -48,7 +48,7 @@ private:
 
 	Mesh* m_spaceShip;
 	Mesh* mesh2;
-	vector <Mesh*> m_shipGuns;
+	Mesh* m_shipGuns;
 
 	Scene_Node* m_root_node;
 
@@ -64,5 +64,8 @@ private:
 
 	int bulletNum = 0;
 	bool isMousePressed = false;
+
+	bool m_leftGun = true;
+	bool m_rightGun = false;
 };
 

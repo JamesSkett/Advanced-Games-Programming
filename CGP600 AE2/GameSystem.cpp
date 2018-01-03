@@ -36,13 +36,23 @@ GameSystem::~GameSystem()
 		cameraMesh = nullptr;
 	}*/
 
-	for (int i = 0; i < m_shipGuns.size(); i++)
+	if (m_shipGuns)
 	{
-		delete m_shipGuns[i];
-		m_shipGuns[i] = nullptr;
-		m_shipGuns.clear();
+		delete m_shipGuns;
+		m_shipGuns = nullptr;
 	}
 	
+	if (m_shipGun1_node)
+	{
+		delete m_shipGun1_node;
+		m_shipGun1_node = nullptr;
+	}
+
+	if (m_shipGun2_node)
+	{
+		delete m_shipGun1_node;
+		m_shipGun1_node = nullptr;
+	}
 
 	if (m_root_node)
 	{
@@ -100,7 +110,7 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 
 	SetupLevel();
 
-
+	//Main game loop
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -110,16 +120,22 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		}
 		else
 		{
-			
+			float deltaTime = Renderer::time.GetDeltaTime();
 			//bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
-			m_shipBullets[bulletNum]->UpdateProjectile(m_root_node);
 
 			
 			GetControllerInput();
 			GetKeyboardInput();
 
+			for (int i = 0; i < m_shipBullets.size(); i++)
+			{
+				if (m_shipBullets[i]->GetIsFired())
+				{
+					m_shipBullets[i]->UpdateProjectile(m_root_node);
+				}
+			}
 
-			//
+
 			//Renderer::camera->SetX(m_camera_node->GetXPos());
 			//Renderer::camera->SetY(m_camera_node->GetYPos());
 			Renderer::camera->CameraFollow(m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
@@ -142,18 +158,11 @@ void GameSystem::SetupLevel()
 	m_spaceShip->LoadObjModel("assets/spaceship.obj");
 	m_spaceShip->AddTexture("assets/Spaceship_D.bmp");
 
-	//create gun meshes
-	for (int i = 0; i < NUMBER_OF_GUNS; i++)
-	{
-		m_shipGuns.push_back(new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext));
-	}
-
-	//set the gun object and texture
-	for (int i = 0; i < m_shipGuns.size(); i++)
-	{
-		m_shipGuns[i]->LoadObjModel("assets/ShipGun.obj");
-		m_shipGuns[i]->AddTexture("assets/Spaceship_D.bmp");
-	}
+	m_shipGuns = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	
+	m_shipGuns->LoadObjModel("assets/ShipGun.obj");
+	m_shipGuns->AddTexture("assets/Spaceship_D.bmp");
+	
 	
 	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	mesh2->LoadObjModel("assets/sphere.obj");
@@ -172,8 +181,8 @@ void GameSystem::SetupLevel()
 
 	m_spaceship_node->SetModel(m_spaceShip);
 	m_node2->SetModel(mesh2);
-	m_shipGun1_node->SetModel(m_shipGuns[FRONT_LEFT_GUN]);
-	m_shipGun2_node->SetModel(m_shipGuns[FRONT_RIGHT_GUN]);
+	m_shipGun1_node->SetModel(m_shipGuns);
+	m_shipGun2_node->SetModel(m_shipGuns);
 
 	m_root_node->AddChildNode(m_spaceship_node);
 	m_root_node->AddChildNode(m_node2);
@@ -205,19 +214,13 @@ void GameSystem::SetupLevel()
 
 	for (int i = 0; i < NUM_OF_BULLETS; i++)
 	{
-		m_shipBullets.push_back(new Projectile(2.0f));
+		m_shipBullets.push_back(new Projectile(20.0f));
 	}
 	
-	for (int i = 0; i < m_shipBullets.size() / 2; i++)
+	for (int i = 0; i < m_shipBullets.size(); i++)
 	{
 		m_shipBullets[i]->SetModel(m_bulletMesh);
 		m_shipGun1_node->AddChildNode(m_shipBullets[i]);
-	}
-
-	for (int i = 50; i < m_shipBullets.size() / 2; i++)
-	{
-		m_shipBullets[i]->SetModel(m_bulletMesh);
-		m_shipGun2_node->AddChildNode(m_shipBullets[i]);
 	}
 
 	//XMMATRIX identity = XMMatrixIdentity();
@@ -323,6 +326,19 @@ void GameSystem::GetKeyboardInput()
 		if (!isMousePressed)
 		{
 			m_shipBullets[bulletNum]->SetIsFired(true);
+			if (m_leftGun)
+			{
+				m_shipBullets[bulletNum]->SetStartPos(m_shipBullets[bulletNum]->GetXPos(), m_shipBullets[bulletNum]->GetYPos(), m_shipBullets[bulletNum]->GetZPos());
+				m_rightGun = true;
+				m_leftGun = false;
+			}
+			else if (m_rightGun)
+			{
+				m_shipBullets[bulletNum]->SetStartPos(-m_shipBullets[bulletNum]->GetXPos(), m_shipBullets[bulletNum]->GetYPos(), m_shipBullets[bulletNum]->GetZPos());
+				m_rightGun = false;
+				m_leftGun = true;
+			}
+			bulletNum++;
 
 			if (bulletNum == 50)
 			{
