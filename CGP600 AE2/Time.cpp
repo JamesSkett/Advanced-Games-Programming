@@ -29,7 +29,7 @@ double Time::GetTime()
 	return double(currentTime.QuadPart - CounterStart) / countsPerSecond;
 }
 
-double Time::GetFrameTime()
+float Time::GetDeltaTime()
 {
 	LARGE_INTEGER currentTime;
 	__int64 tickCount;
@@ -47,14 +47,13 @@ double Time::GetFrameTime()
 int Time::GetFPS()
 {
 	frameCount++;
+
 	if (GetTime() > 1.0f)
 	{
 		fps = frameCount;
 		frameCount = 0;
 		StartTimer();
 	}
-
-	deltaTime = GetFrameTime();
 
 	return fps;
 }
