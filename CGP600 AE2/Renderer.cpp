@@ -250,7 +250,7 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	
 
 	// Clear the back buffer - choose a colour you like
-	float rgba_clear_colour[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	float rgba_clear_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_pImmediateContext->ClearRenderTargetView(m_pBackBufferRTView, rgba_clear_colour);
 
 	m_pImmediateContext->ClearDepthStencilView(m_pzBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -270,11 +270,15 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	rootNode->Execute(&identity, &view, &projection);
 	skyBox->Draw(&view, &projection);
 
-	//m_fps = time.GetFPS();
+	m_fps = time.GetFPS();
 
 	//m_FPS << "FPS " << m_fps;
 
-	text->AddText("Score: ", -1.0f, 1.0f, 0.05f);
+	string score = "FPS:";
+
+	score = score + to_string(m_fps);
+
+	text->AddText(score, -1.0f, 1.0f, 0.05f);
 
 	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendEnable, 0, 0xffffffff);
 
