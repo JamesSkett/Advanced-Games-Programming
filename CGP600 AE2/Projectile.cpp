@@ -5,6 +5,7 @@
 Projectile::Projectile(float velocity)
 {
 	m_velocity = velocity;
+	m_canDraw = false;
 }
 
 
@@ -16,12 +17,11 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 {
 	if (m_isFired)
 	{
-
+		m_canDraw = true;
 		m_localDirX = sinf(XMConvertToRadians(m_yangle));
 		m_localDirY = atan(XMConvertToRadians(m_xangle));
 		m_localDirZ = cosf(XMConvertToRadians(m_yangle));
 
-		xyz startPos = { m_x, m_y, m_z };
 		xyz currentPos;
 		float distance;
 		bool inRange = true;
@@ -31,9 +31,9 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 			
 		MoveForward(m_velocity);
 
-		distance = sqrt(pow(currentPos.x - startPos.x, 2) + pow(currentPos.y - startPos.y, 2) + pow(currentPos.z - startPos.z, 2));
+		distance = sqrt(pow(currentPos.x - m_startPos.x, 2) + pow(currentPos.y - m_startPos.y, 2) + pow(currentPos.z - m_startPos.z, 2));
 
-		if (distance >= 100.0f)
+		if (distance >= 1000.0f)
 		{
 			m_isFired = false;
 
@@ -49,6 +49,16 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 void Projectile::SetIsFired(bool isFired)
 {
 	m_isFired = isFired;
+}
+
+void Projectile::SetStartPos(float x, float y, float z)
+{
+	m_startPos = { x, y, z };
+}
+
+bool Projectile::GetIsFired()
+{
+	return m_isFired;
 }
 
 void Projectile::MoveForward(float speed)

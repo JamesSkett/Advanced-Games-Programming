@@ -9,7 +9,12 @@ public:
 	~Projectile();
 
 	bool UpdateProjectile(Scene_Node* root_node);
+
 	void SetIsFired(bool isFired);
+	void SetStartPos(float x, float y, float z);
+
+	bool GetIsFired();
+
 
 	void MoveForward(float speed);
 
@@ -20,5 +25,7 @@ private:
 	float m_localDirX;
 	float m_localDirY;
 	float m_localDirZ;
+
+	xyz m_startPos;
 };
 
