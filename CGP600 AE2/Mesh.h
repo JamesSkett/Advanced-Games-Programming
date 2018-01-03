@@ -132,10 +132,7 @@ protected:
 	Light light;
 	cbPerFrame constBuffPerFrame;
 
-	ID3D11RasterizerState* m_pRasterSolid = 0;
-	ID3D11RasterizerState* m_pRasterSkyBox = 0;
-	ID3D11DepthStencilState* m_pDepthWriteSolid = 0;
-	ID3D11DepthStencilState* m_pDepthWriteSkyBox = 0;
+	
 
 	float m_dx, m_dy, m_dz;
 

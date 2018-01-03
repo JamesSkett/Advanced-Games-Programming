@@ -167,6 +167,20 @@ HRESULT Renderer::InitialiseD3D()
 
 	if (FAILED(hr)) return hr;
 
+	D3D11_BLEND_DESC b;
+	b.RenderTarget[0].BlendEnable = TRUE;
+	b.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	b.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	b.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	b.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	b.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	b.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	b.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	b.IndependentBlendEnable = FALSE;
+	b.AlphaToCoverageEnable = FALSE;
+
+	hr = m_pD3DDevice->CreateBlendState(&b, &m_pAlphaBlendEnable);
+
 	//Create the z buffer
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	ZeroMemory(&dsvDesc, sizeof(dsvDesc));
@@ -225,6 +239,8 @@ void Renderer::ShutdownD3D()
 	if (m_pConstantBuffer0)  m_pConstantBuffer0->Release();
 	if (m_pImmediateContext) m_pImmediateContext->Release();
 	if (m_pD3DDevice)        m_pD3DDevice->Release();
+	if (m_pAlphaBlendEnable) m_pAlphaBlendEnable->Release();
+	if (m_pAlphaBlendDisable) m_pAlphaBlendDisable->Release();
 }
 
 void Renderer::RenderFrame(Scene_Node* rootNode)
@@ -254,12 +270,17 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	rootNode->Execute(&identity, &view, &projection);
 	skyBox->Draw(&view, &projection);
 
-	m_fps = time.GetFPS();
+	//m_fps = time.GetFPS();
 
-	m_FPS << "FPS " << m_fps;
+	//m_FPS << "FPS " << m_fps;
 
-	text->AddText(m_FPS.str().c_str(), -1.0f, 1.0f, 0.1f);
+	text->AddText("Score: ", -1.0f, 1.0f, 0.05f);
+
+	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendEnable, 0, 0xffffffff);
+
 	text->RenderText();
+
+	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendDisable, 0, 0xffffffff);
 
 	// RENDER HERE
 
@@ -282,7 +303,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	skyBox->AddTexture("assets/spaceMap.dds");
 	skyBox->SetScale(55.0f);
 
-	text = new Text2D("assets/font1.bmp", m_pD3DDevice, m_pImmediateContext);
+	text = new Text2D("assets/MyFont.png", m_pD3DDevice, m_pImmediateContext);
 
 	return S_OK;
 }

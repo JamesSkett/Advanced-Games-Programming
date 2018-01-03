@@ -10,6 +10,10 @@ SkyBox::SkyBox(ID3D11Device* D3D11Device, ID3D11DeviceContext* ImmediateContext)
 
 SkyBox::~SkyBox()
 {
+	if (m_pRasterSolid != 0) m_pRasterSolid->Release();
+	if (m_pRasterSkyBox != 0) m_pRasterSkyBox->Release();
+	if (m_pDepthWriteSolid != 0) m_pDepthWriteSolid->Release();
+	if (m_pDepthWriteSkyBox != 0) m_pDepthWriteSkyBox->Release();
 }
 
 int SkyBox::LoadObjModel(char * fileName)

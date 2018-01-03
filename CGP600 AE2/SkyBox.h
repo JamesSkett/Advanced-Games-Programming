@@ -20,6 +20,10 @@ private:
 	ID3D11InputLayout*		m_pInputLayout;
 	ID3D11Buffer*			m_pConstantBuffer0;
 
+	ID3D11RasterizerState* m_pRasterSolid = 0;
+	ID3D11RasterizerState* m_pRasterSkyBox = 0;
+	ID3D11DepthStencilState* m_pDepthWriteSolid = 0;
+	ID3D11DepthStencilState* m_pDepthWriteSkyBox = 0;
 };
 
 struct POS_COL_TEX_VERTEX

@@ -17,13 +17,8 @@ VOut VShader(float4 position : POSITION, float2 texcoord : TEXCOORD, float3 norm
 {
 	VOut output;
 
-	float4 default_color = { 1,1,1,1 };
-
 	output.texcoord = position.xyz;
 	output.position = mul(WVPMatrix, position);
-	// diffuse_amount = dot(directional_light_vector, normal);
-	//diffuse_amount = saturate(diffuse_amount);
-	//output.color = ambient_light_colour + (directional_light_colour * diffuse_amount);
 
 
 	return output;

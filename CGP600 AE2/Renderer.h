@@ -76,11 +76,8 @@ private:
 	ID3D11ShaderResourceView* m_pTexture0;
 	ID3D11SamplerState* m_pSampler0;
 	
-
-	XMVECTOR g_directional_light_shines_from;
-	XMVECTOR g_directional_light_colour;
-	XMVECTOR g_ambient_light_colour;
-
+	ID3D11BlendState* m_pAlphaBlendEnable;
+	ID3D11BlendState* m_pAlphaBlendDisable;
 
 	IDirectInput8* m_direct_input;
 	IDirectInputDevice8* m_keyboard_device;

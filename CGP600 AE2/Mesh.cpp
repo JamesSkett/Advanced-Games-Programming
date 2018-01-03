@@ -27,10 +27,7 @@ Mesh::~Mesh()
 	if (m_pTexture)     m_pTexture->Release();
 	//if (m_pSampler0)     m_pSampler0->Release();
 
-	if (m_pRasterSolid != 0) m_pRasterSolid->Release();
-	if (m_pRasterSkyBox != 0) m_pRasterSkyBox->Release();
-	if (m_pDepthWriteSolid != 0) m_pDepthWriteSolid->Release();
-	if (m_pDepthWriteSkyBox != 0) m_pDepthWriteSkyBox->Release();
+	
 
 	if (m_pConstantBuffer)  m_pConstantBuffer->Release();
 	if (cbPerFrameBuffer) cbPerFrameBuffer->Release();

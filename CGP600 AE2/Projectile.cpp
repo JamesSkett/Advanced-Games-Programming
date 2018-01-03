@@ -16,7 +16,6 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 {
 	if (m_isFired)
 	{
-		m_isFired = false;
 
 		m_localDirX = sinf(XMConvertToRadians(m_yangle));
 		m_localDirY = atan(XMConvertToRadians(m_xangle));
@@ -26,21 +25,24 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 		xyz currentPos;
 		float distance;
 		bool inRange = true;
-		while(inRange)
+
+			
+		currentPos = { m_x, m_y, m_z };
+			
+		MoveForward(m_velocity);
+
+		distance = sqrt(pow(currentPos.x - startPos.x, 2) + pow(currentPos.y - startPos.y, 2) + pow(currentPos.z - startPos.z, 2));
+
+		if (distance >= 100.0f)
 		{
-			currentPos = { m_x, m_y, m_z };
-			MoveForward(m_velocity);
+			m_isFired = false;
 
-			distance = sqrt(pow(currentPos.x - startPos.x, 2) + pow(currentPos.y - startPos.y, 2) + pow(currentPos.z - startPos.z, 2));
-
-			if (distance >= 100.0f)
-			{
-				m_x = 0.0f;
-				m_y = 0.0f;
-				m_z = 0.0f;
-				return false;
-			}
+			m_x = 0.0f;
+			m_y = 0.0f;
+			m_z = 0.0f;
+			return false;
 		}
+		
 	}
 }
 

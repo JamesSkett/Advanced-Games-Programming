@@ -112,10 +112,12 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		{
 			
 			//bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
+			m_shipBullets[bulletNum]->UpdateProjectile(m_root_node);
 
 			
 			GetControllerInput();
 			GetKeyboardInput();
+
 
 			//
 			//Renderer::camera->SetX(m_camera_node->GetXPos());
@@ -203,7 +205,7 @@ void GameSystem::SetupLevel()
 
 	for (int i = 0; i < NUM_OF_BULLETS; i++)
 	{
-		m_shipBullets.push_back(new Projectile(0.00001f));
+		m_shipBullets.push_back(new Projectile(2.0f));
 	}
 	
 	for (int i = 0; i < m_shipBullets.size() / 2; i++)
@@ -320,34 +322,12 @@ void GameSystem::GetKeyboardInput()
 	{
 		if (!isMousePressed)
 		{
-			xyz bulletPos = { m_spaceship_node->GetXPos() + m_shipGun1_node->GetXPos() + m_shipBullets[bulletNum]->GetXPos(),
-							  m_spaceship_node->GetYPos() + m_shipGun1_node->GetYPos() + m_shipBullets[bulletNum]->GetYPos(),
-							  m_spaceship_node->GetZPos() + m_shipGun1_node->GetZPos() + m_shipBullets[bulletNum]->GetZPos() };
-
-			m_shipGun1_node->DetachNode(m_shipBullets[bulletNum]);
-			m_root_node->AddChildNode(m_shipBullets[bulletNum]);
 			m_shipBullets[bulletNum]->SetIsFired(true);
 
-			
-
-			float bulletScale = m_spaceShip->GetScale() - m_shipGun1_node->GetScale();
-
-			m_shipBullets[bulletNum]->SetXPos(bulletPos.x);
-			m_shipBullets[bulletNum]->SetYPos(bulletPos.y);
-			m_shipBullets[bulletNum]->SetZPos(bulletPos.z);
-			m_shipBullets[bulletNum]->SetScale(bulletScale);
-
-			thread shootBullet([=]
+			if (bulletNum == 50)
 			{
-				if (!m_shipBullets[bulletNum]->UpdateProjectile(m_root_node))
-				{
-					m_root_node->DetachNode(m_shipBullets[bulletNum]);
-					m_shipGun1_node->AddChildNode(m_shipBullets[bulletNum]);
-				}
-			});
-			shootBullet.detach();
-
-			bulletNum++;
+				bulletNum = 0;
+			}
 		}
 		isMousePressed = true;
 

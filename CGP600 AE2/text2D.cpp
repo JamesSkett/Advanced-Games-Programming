@@ -169,7 +169,7 @@ void Text2D::RenderText(void)
 				texy= 1.0/NUMLINES; //second line
 				texx  = (c-'A') *1.0f /26.0f;
 			}
-			else if(c >= '0' && c <= '9') // numbers
+			else if(c >= '0' && c <= ':') // numbers
 			{
 				texy=  2.0/NUMLINES; // third line
 				texx  = (c-'0') *1.0f /26.0f;
