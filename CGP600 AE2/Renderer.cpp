@@ -278,7 +278,7 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 
 	score = score + to_string(m_fps);
 
-	text->AddText(score, -1.0f, 1.0f, 0.05f);
+	text->AddText(score, -1.0f, 1.0f, 0.02f);
 
 	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendEnable, 0, 0xffffffff);
 
