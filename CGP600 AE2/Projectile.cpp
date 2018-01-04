@@ -18,9 +18,6 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 	if (m_isFired)
 	{
 		m_canDraw = true;
-		m_localDirX = sinf(XMConvertToRadians(m_yangle));
-		m_localDirY = atan(XMConvertToRadians(m_xangle));
-		m_localDirZ = cosf(XMConvertToRadians(m_yangle));
 
 		xyz currentPos;
 		float distance;
@@ -44,6 +41,8 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 		}
 		
 	}
+
+	return true;
 }
 
 void Projectile::SetIsFired(bool isFired)
@@ -54,6 +53,13 @@ void Projectile::SetIsFired(bool isFired)
 void Projectile::SetStartPos(float x, float y, float z)
 {
 	m_startPos = { x, y, z };
+}
+
+void Projectile::setDirection(float dx, float dy, float dz)
+{
+	m_localDirX = dx;
+	m_localDirY = dy;
+	m_localDirZ = dz;
 }
 
 bool Projectile::GetIsFired()

@@ -13,6 +13,8 @@ public:
 	void SetIsFired(bool isFired);
 	void SetStartPos(float x, float y, float z);
 
+	void setDirection(float dx, float dy, float dz);
+
 	bool GetIsFired();
 
 
