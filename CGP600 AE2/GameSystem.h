@@ -15,6 +15,7 @@ using namespace DirectX;
 #include "Math.h"
 #include "text2D.h"
 #include "Projectile.h"
+#include "Planet.h"
 
 enum ShipGuns
 {
@@ -53,13 +54,12 @@ private:
 	Scene_Node* m_root_node;
 
 	Scene_Node* m_spaceship_node;
-	Scene_Node* m_planet_node;
 	Scene_Node* m_shipGun1_node;
 	Scene_Node* m_shipGun2_node;
 
 	Mesh* m_bulletMesh;
 	vector <Projectile*> m_shipBullets;
-
+	vector <Planet*> m_planets;
 	//Text2D* text;
 
 	int m_bulletNum = 0;
