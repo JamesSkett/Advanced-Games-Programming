@@ -142,19 +142,12 @@ int SkyBox::LoadObjModel(char * fileName)
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
 
-	//CalculateModelCentrePoint();
-	//CalculateBoundingSphereRadius();
 
 	return 0;
 }
 
 void SkyBox::Draw(XMMATRIX * view, XMMATRIX * projection)
 {
-	//m_directional_light_shines_from = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-
-	//m_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-
-	//m_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
 	XMMATRIX world , transpose;
 	MODEL_CONSTANT_BUFFER model_cb_values;
