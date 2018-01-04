@@ -51,6 +51,21 @@ float Scene_Node::GetScale()
 	return m_scale;
 }
 
+float Scene_Node::GetXDir()
+{
+	return m_dx;
+}
+
+float Scene_Node::GetYDir()
+{
+	return m_dy;
+}
+
+float Scene_Node::GetZDir()
+{
+	return m_dz;
+}
+
 //Setters
 void Scene_Node::SetXPos(float x)
 {

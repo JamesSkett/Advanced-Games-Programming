@@ -24,6 +24,9 @@ public:
 	float GetYAngle();
 	float GetZAngle();
 	float GetScale();
+	float GetXDir();
+	float GetYDir();
+	float GetZDir();
 
 	//Setters
 	void SetXPos(float x);
