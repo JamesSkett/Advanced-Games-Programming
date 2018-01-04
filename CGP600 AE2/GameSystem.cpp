@@ -327,8 +327,8 @@ void GameSystem::GetKeyboardInput()
 	//Renderer::camera->Strafe(-renderer->mouseCurrState.lX);
 	//Renderer::camera->Rotate(-renderer->mouseCurrState.lX, m_node1->GetXPos(), m_node1->GetYPos(), m_node1->GetZPos());
 
-	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY * 0.1f, m_root_node);
-	m_spaceship_node->UpdateYangle(renderer->mouseCurrState.lX * 0.1f, m_root_node);
+	m_spaceship_node->UpdateXangle(renderer->GetMousY() * 0.1f, m_root_node);
+	m_spaceship_node->UpdateYangle(renderer->GetMousX() * 0.1f, m_root_node);
 
 	if (renderer->mouseCurrState.rgbButtons[0])
 	{

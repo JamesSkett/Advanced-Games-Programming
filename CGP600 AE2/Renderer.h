@@ -43,6 +43,10 @@ public:
 	void ReadInputState();
 	bool IsKeyPressed(unsigned char DI_keycode);
 
+	float GetMousX();
+
+	float GetMousY();
+
 	static Camera* camera;
 	static SkyBox* skyBox;
 	static Time time;

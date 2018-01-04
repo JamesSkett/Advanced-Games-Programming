@@ -373,4 +373,32 @@ bool Renderer::IsKeyPressed(unsigned char DI_keycode)
 	return m_keyboard_keys_state[DI_keycode] & 0x80;
 }
 
+float Renderer::GetMousX()
+{
+	if (mouseCurrState.lX <= -1.0)
+	{
+		mouseCurrState.lX = 0;
+	}
 
+	if (mouseCurrState.lX > 1.0);
+	{
+		mouseCurrState.lX = 1.0;
+	}
+
+	return mouseCurrState.lX;
+}
+
+float Renderer::GetMousY()
+{
+	if (mouseCurrState.lY <= -1.0)
+	{
+		mouseCurrState.lY = 0;
+	}
+
+	if (mouseCurrState.lY > 1.0);
+	{
+		mouseCurrState.lY = 0;
+	}
+
+	return mouseCurrState.lY;
+}
