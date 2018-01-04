@@ -2,20 +2,28 @@
 
 #include <thread>
 
-Math* GameSystem::math;
+Math GameSystem::math;
 
+//set up the renderer and main menu
 GameSystem::GameSystem()
 {
 	renderer = new Renderer;
+	m_mainMenu = new MainMenu;
 }
 
-
+//clean up before exiting
 GameSystem::~GameSystem()
 {
 	if (renderer)
 	{
 		delete renderer;
 		renderer = nullptr;
+	}
+
+	if (m_mainMenu)
+	{
+		delete m_mainMenu;
+		m_mainMenu = nullptr;
 	}
 
 	if (m_spaceShip)
@@ -29,12 +37,6 @@ GameSystem::~GameSystem()
 		delete m_planet;
 		m_planet = nullptr;
 	}
-
-	/*if (cameraMesh)
-	{
-		delete cameraMesh;
-		cameraMesh = nullptr;
-	}*/
 
 	if (m_shipGuns)
 	{
@@ -66,13 +68,29 @@ GameSystem::~GameSystem()
 		m_spaceship_node = nullptr;
 	}
 
-	/*if (m_camera_node)
+	if (m_bulletMesh)
 	{
-		delete m_camera_node;
-		m_camera_node = nullptr;
-	}*/
+		delete m_bulletMesh;
+		m_bulletMesh = nullptr;
+	}
+
+	for (unsigned int i = 0; i < m_shipBullets.size(); i++)
+	{
+		delete m_shipBullets[i];
+		m_shipBullets[i] = nullptr;
+		m_shipBullets.clear();
+	}
+
+	for (unsigned int i = 0; i < m_planets.size(); i++)
+	{
+		delete m_planets[i];
+		m_planets[i] = nullptr;
+		m_planets.clear();
+	}
+
 }
 
+//set up the game and run the main game loop
 int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -102,6 +120,10 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		return 0;
 	}
 
+	//run the main menu
+	m_mainMenu->StartMenu(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext, renderer);
+
+	//set up the main game when menu is done
 	SetupLevel();
 
 	//Main game loop
@@ -114,13 +136,15 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 		}
 		else
 		{
+			//get the deltatime
 			float deltaTime = Renderer::time.GetDeltaTime();
 			//bool isColliding = m_node1->CheckCollision(m_node2, m_root_node);
 
-			
+			//Get the controller and keyboard input
 			GetControllerInput();
 			GetKeyboardInput();
 
+			//update the projectiles
 			for (unsigned int i = 0; i < m_shipBullets.size(); i++)
 			{
 				if (m_shipBullets[i]->GetIsFired())
@@ -129,11 +153,13 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 
 				}
 
+				//check for collision with the planets
 				for (unsigned int j = 0; j < m_planets.size(); j++)
 				{
 					if (m_shipBullets[i]->CheckCollision(m_planets[j], m_root_node))
 					{
 						m_planets[j]->RemoveHealth(5);
+						//set the bullet back to origin and dont draw it
 						m_shipBullets[i]->SetXPos(m_spaceship_node->GetXPos());
 						m_shipBullets[i]->SetYPos(m_spaceship_node->GetYPos());
 						m_shipBullets[i]->SetZPos(m_spaceship_node->GetZPos());
@@ -147,61 +173,61 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 
 
 
-			//Renderer::camera->SetX(m_camera_node->GetXPos());
-			//Renderer::camera->SetY(m_camera_node->GetYPos());
+			//set the camera to follow the spaceship
 			Renderer::camera->CameraFollow(m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
 			
-			m_planets[0]->UpdatePlanet(m_spaceship_node);
+			//update the planets
+			for (unsigned int i = 0; i < m_planets.size(); i++)
+			{
+				m_planets[i]->UpdatePlanet(m_spaceship_node);
+			}
 
+			//render the scene
 			renderer->RenderFrame(m_root_node, m_planets);
 
 
 		}
 	}
 
+	//release all object before exiting
 	renderer->ShutdownD3D();
 
 	return 0;
 }
 
+//set up the main game level
 void GameSystem::SetupLevel()
 {
+	//create spaceship mesh
 	m_spaceShip = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	m_spaceShip->LoadObjModel("assets/spaceship.obj");
 	m_spaceShip->AddTexture("assets/Spaceship_D.bmp");
 
+	//create the ship guns mesh
 	m_shipGuns = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	
 	m_shipGuns->LoadObjModel("assets/ShipGun.obj");
 	m_shipGuns->AddTexture("assets/Spaceship_D.bmp");
 	
-	
+	//create the planet mesh
 	m_planet = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	m_planet->LoadObjModel("assets/sphere.obj");
 	m_planet->AddTexture("assets/planetTexture.png");
 
+	//create the scene nodes
 	m_root_node = new Scene_Node();
 	m_spaceship_node = new Scene_Node();
 	m_shipGun1_node = new Scene_Node();
 	m_shipGun2_node = new Scene_Node();
 
-	/*text = new Text2D("assets/font1.bmp", Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	text->AddText("HELLO WORLD!", 0.0f, 0.0f, 0.2f);
-	text->RenderText();*/
-
-
+	//give the scene nodes their respective meshes
 	m_spaceship_node->SetModel(m_spaceShip);
-
-
 	m_shipGun1_node->SetModel(m_shipGuns);
 	m_shipGun2_node->SetModel(m_shipGuns);
-
 	m_root_node->AddChildNode(m_spaceship_node);
-
 	m_spaceship_node->AddChildNode(m_shipGun1_node);
 	m_spaceship_node->AddChildNode(m_shipGun2_node);
 
-
+	//set the start pos of the plaer ship
 	m_spaceship_node->SetScale(0.1f);
 	m_spaceship_node->SetXPos(0.0f);
 	m_spaceship_node->SetZPos(10.0f);
@@ -217,15 +243,18 @@ void GameSystem::SetupLevel()
 	m_shipGun2_node->SetZAngle(180.0f);
 	m_shipGun2_node->setCanCollide(false);
 
+	//create the bullet mesh
 	m_bulletMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	m_bulletMesh->LoadObjModel("assets/Bullet.obj");
 	m_bulletMesh->AddTexture("assets/texture.bmp");
 
+	//pool the projectiles
 	for (int i = 0; i < NUM_OF_BULLETS; i++)
 	{
 		m_shipBullets.push_back(new Projectile(2.0f));
 	}
 	
+	//give the projectiles the bullet mesh and make is so they arent rendered
 	for (unsigned int i = 0; i < m_shipBullets.size(); i++)
 	{
 		m_shipBullets[i]->SetModel(m_bulletMesh);
@@ -234,16 +263,21 @@ void GameSystem::SetupLevel()
 		m_shipBullets[i]->setCanDraw(false);
 	}
 
-	m_planets.push_back(new Planet(100, 20, 100, 10, 300, "assets/planetTexture.png"));
+	//create the planets
+	m_planets.push_back(new Planet(PLANET_0_HEALTH, PLANET_0_SIZE, PLANET_0_X_POS, PLANET_0_Y_POS, PLANET_0_Z_POS));
+	m_planets.push_back(new Planet(PLANET_1_HEALTH, PLANET_1_SIZE, PLANET_1_X_POS, PLANET_1_Y_POS, PLANET_1_Z_POS));
+	//m_planets.push_back(new Planet(100, 20, 100, 10, 300));
+	//m_planets.push_back(new Planet(100, 20, 100, 10, 300));
 
-	m_planets[0]->SetModel(m_planet);
-	m_root_node->AddChildNode(m_planets[0]);
-
-	//XMMATRIX identity = XMMatrixIdentity();
-
-	//m_root_node->UpdateCollisionTree(&identity, 1.0f);
+	//give the planets their mesh
+	for (unsigned int i = 0; i < m_planets.size(); i++)
+	{
+		m_planets[i]->SetModel(m_planet);
+		m_root_node->AddChildNode(m_planets[i]);
+	}
 }
 
+//Get the keyboard input
 void GameSystem::GetKeyboardInput()
 {
 	if (renderer->IsKeyPressed(DIK_1))
@@ -268,16 +302,15 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_D))
 	{
-		//m_node1->UpdateYangle(0.5f, m_root_node);
 		m_spaceship_node->UpdateYangle(1.5f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_A))
 	{
-		//m_node1->UpdateYangle(-0.5f, m_root_node);
 		m_spaceship_node->UpdateYangle(-1.5f, m_root_node);
 	}
 
+	//change the direction the camera is facing
 	if (renderer->IsKeyPressed(DIK_UP))
 	{
 		Renderer::camera->SetIsForward(true);
@@ -328,9 +361,6 @@ void GameSystem::GetKeyboardInput()
 	{
 		Renderer::camera->Rotate(-0.3f, m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
 	}
-
-	//Renderer::camera->Strafe(-renderer->mouseCurrState.lX);
-	//Renderer::camera->Rotate(-renderer->mouseCurrState.lX, m_node1->GetXPos(), m_node1->GetYPos(), m_node1->GetZPos());
 
 	m_spaceship_node->UpdateXangle(renderer->mouseCurrState.lY * 0.1f, m_root_node);
 	m_spaceship_node->UpdateYangle(renderer->mouseCurrState.lX * 0.1f, m_root_node);
