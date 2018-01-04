@@ -12,9 +12,6 @@ Camera* Renderer::camera;
 SkyBox* Renderer::skyBox;
 Time Renderer::time;
 
-XMMATRIX Renderer::view;
-XMMATRIX Renderer::projection;
-XMMATRIX Renderer::identity;
 
 Renderer::Renderer()
 {
@@ -220,12 +217,25 @@ HRESULT Renderer::InitialiseD3D()
 	return S_OK;
 }
 
+//release all the object when done
 void Renderer::ShutdownD3D()
 {
 	if (camera)
 	{
 		delete camera;
 		camera = nullptr;
+	}
+
+	if (skyBox)
+	{
+		delete skyBox;
+		skyBox = nullptr;
+	}
+
+	if (m_FPSCount)
+	{
+		delete m_FPSCount;
+		m_FPSCount = nullptr;
 	}
 
 	if (m_keyboard_device)
@@ -268,11 +278,14 @@ void Renderer::RenderFrame(Scene_Node* rootNode, vector <Planet*> planets)
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(70.0f), m_screenWidth / m_screenHeight, 0.1f, 500.0f);
 	view = camera->GetViewMatrix();
 
+	//keep the skybox at the camera pos
 	skyBox->SetXPos(camera->GetX());
 	skyBox->SetYPos(camera->GetY());
 	skyBox->SetZPos(camera->GetZ());
 
+	//update and draw all the scene nodes
 	rootNode->Execute(&identity, &view, &projection);
+	//draw the skybox
 	skyBox->Draw(&view, &projection);
 
 	m_fps = time.GetFPS();
@@ -299,12 +312,68 @@ void Renderer::RenderFrame(Scene_Node* rootNode, vector <Planet*> planets)
 	// Select which primitive type to use //03-01
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(m_hWnd);
+	//if player presses escape exit the game
+	if (IsKeyPressed(DIK_ESCAPE))
+	{
+		DestroyWindow(m_hWnd);
+	}
 
 	// Display what has just been rendered
 	m_pSwapChain->Present(1, 0);
 }
 
+void Renderer::RenderFrame(Text2D* button1, Text2D* button2, bool &isDone)
+{
+
+	// Clear the back buffer - choose a colour you like
+	float rgba_clear_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_pImmediateContext->ClearRenderTargetView(m_pBackBufferRTView, rgba_clear_colour);
+
+	m_pImmediateContext->ClearDepthStencilView(m_pzBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//read keyboard and mouse input
+	ReadInputState();
+
+	//set the identity, projection and view matrix
+	identity = XMMatrixIdentity();
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(70.0f), m_screenWidth / m_screenHeight, 0.1f, 500.0f);
+	view = camera->GetViewMatrix();
+
+	//get the frame count
+	m_fps = time.GetFPS();
+
+	//score text
+	string score = "FPS:";
+
+	//add the frame count to the string
+	score = score + to_string(m_fps);
+
+	//add text to the frame counter
+	m_FPSCount->AddText(score, -1.0f, 1.0f, 0.02f);
+
+	//set the blend state to allow transparency
+	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendEnable, 0, 0xffffffff);
+
+	//render the text
+	button1->RenderText();
+	button2->RenderText();
+	m_FPSCount->RenderText();
+
+	//set the belnd state back to default
+	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendDisable, 0, 0xffffffff);
+
+	// RENDER HERE
+
+	// Select which primitive type to use //03-01
+	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	
+
+	// Display what has just been rendered
+	m_pSwapChain->Present(1, 0);
+}
+
+//sets up the camera skybox and frame counter
 HRESULT Renderer::InitialiseGraphics(void)
 {
 	
@@ -320,6 +389,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	return S_OK;
 }
 
+//Set up the keyboard and mouse input
 HRESULT Renderer::InitialiseInput()
 {
 	HRESULT hr;
@@ -357,6 +427,7 @@ HRESULT Renderer::InitialiseInput()
 	return S_OK;
 }
 
+//read the keyboard and mouse input
 void Renderer::ReadInputState()
 {
 	HRESULT hr;
@@ -376,9 +447,16 @@ void Renderer::ReadInputState()
 	}
 }
 
+//checks to see if a key has been pressed
 bool Renderer::IsKeyPressed(unsigned char DI_keycode)
 {
 	return m_keyboard_keys_state[DI_keycode] & 0x80;
+}
+
+//destroys the game window exiting the game
+void Renderer::DestroyWin()
+{
+	DestroyWindow(m_hWnd);
 }
 
 
