@@ -10,9 +10,19 @@ using namespace DirectX;
 #include "Mesh.h"
 #include "objfilemodel.h"
 
-class Scene_Node
+__declspec(align(16)) class Scene_Node
 {
 public:
+	void* operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
+
+	void operator delete(void* p)
+	{
+		return _mm_free(p);
+	}
+
 	Scene_Node();
 	~Scene_Node();
 

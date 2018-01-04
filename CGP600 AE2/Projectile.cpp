@@ -37,6 +37,7 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 			m_x = 0.0f;
 			m_y = 0.0f;
 			m_z = 0.0f;
+			setCanDraw(false);
 			return false;
 		}
 		

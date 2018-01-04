@@ -40,7 +40,7 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 
 	// Create window
 	m_hInst = hInstance;
-	RECT rc = { 0, 0, m_screenWidth, m_screenHeight };
+	RECT rc = { 0, 0, (long)m_screenWidth, (long)m_screenHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	m_hWnd = CreateWindow(Name, m_GameName, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left,

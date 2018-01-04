@@ -127,14 +127,12 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 			GetControllerInput();
 			GetKeyboardInput();
 
-			for (int i = 0; i < m_shipBullets.size(); i++)
+			for (unsigned int i = 0; i < m_shipBullets.size(); i++)
 			{
 				if (m_shipBullets[i]->GetIsFired())
 				{
-					if (m_shipBullets[i]->UpdateProjectile(m_root_node))
-					{
-						m_shipGun1_node->AddChildNode(m_shipBullets[i]);
-					}
+					m_shipBullets[i]->UpdateProjectile(m_root_node);
+
 				}
 
 				
@@ -223,14 +221,15 @@ void GameSystem::SetupLevel()
 
 	for (int i = 0; i < NUM_OF_BULLETS; i++)
 	{
-		m_shipBullets.push_back(new Projectile(20.0f));
+		m_shipBullets.push_back(new Projectile(2.0f));
 	}
 	
-	for (int i = 0; i < m_shipBullets.size(); i++)
+	for (unsigned int i = 0; i < m_shipBullets.size(); i++)
 	{
 		m_shipBullets[i]->SetModel(m_bulletMesh);
-		m_shipGun1_node->AddChildNode(m_shipBullets[i]);
+		m_root_node->AddChildNode(m_shipBullets[i]);
 		m_shipBullets[i]->setCanCollide(false);
+		m_shipBullets[i]->setCanDraw(false);
 	}
 
 	//XMMATRIX identity = XMMatrixIdentity();
@@ -335,26 +334,25 @@ void GameSystem::GetKeyboardInput()
 	{
 		if (!m_isMousePressed)
 		{
-			m_shipGun1_node->DetachNode(m_shipBullets[m_bulletNum]);
-			m_root_node->AddChildNode(m_shipBullets[m_bulletNum]);
+			m_shipBullets[m_bulletNum]->setCanDraw(true);
 
-			m_shipBullets[m_bulletNum]->SetXPos(m_spaceship_node->GetXPos() - 7.0f);
-			m_shipBullets[m_bulletNum]->SetYPos(m_spaceship_node->GetYPos());
-			m_shipBullets[m_bulletNum]->SetZPos(m_spaceship_node->GetZPos() + 17.0f);
-
-			m_shipBullets[m_bulletNum]->SetScale(0.5f);
-			m_shipBullets[m_bulletNum]->setDirection(m_shipGun1_node->GetXDir(), m_shipGun1_node->GetYDir(), m_shipGun1_node->GetZDir());
+			m_shipBullets[m_bulletNum]->SetScale(0.1f);
+			m_shipBullets[m_bulletNum]->setDirection(m_spaceship_node->GetXDir(), m_spaceship_node->GetYDir(), m_spaceship_node->GetZDir());
 
 			m_shipBullets[m_bulletNum]->SetIsFired(true);
 			if (m_leftGun)
 			{
-				m_shipBullets[m_bulletNum]->SetStartPos(m_shipBullets[m_bulletNum]->GetXPos(), m_shipBullets[m_bulletNum]->GetYPos(), m_shipBullets[m_bulletNum]->GetZPos());
+				m_shipBullets[m_bulletNum]->SetXPos(m_spaceship_node->GetXPos() - 2);
+				m_shipBullets[m_bulletNum]->SetYPos(m_spaceship_node->GetYPos());
+				m_shipBullets[m_bulletNum]->SetZPos(m_spaceship_node->GetZPos());
 				m_rightGun = true;
 				m_leftGun = false;
 			}
 			else if (m_rightGun)
 			{
-				m_shipBullets[m_bulletNum]->SetStartPos(-m_shipBullets[m_bulletNum]->GetXPos(), m_shipBullets[m_bulletNum]->GetYPos(), m_shipBullets[m_bulletNum]->GetZPos());
+				m_shipBullets[m_bulletNum]->SetXPos(m_spaceship_node->GetXPos() + 2);
+				m_shipBullets[m_bulletNum]->SetYPos(m_spaceship_node->GetYPos());
+				m_shipBullets[m_bulletNum]->SetZPos(m_spaceship_node->GetZPos());
 				m_rightGun = false;
 				m_leftGun = true;
 			}
