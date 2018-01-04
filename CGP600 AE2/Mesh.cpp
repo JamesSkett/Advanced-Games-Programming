@@ -25,12 +25,12 @@ Mesh::~Mesh()
 	if (m_pVShader) m_pVShader->Release();
 	if (m_pPShader)  m_pPShader->Release();
 	if (m_pTexture)     m_pTexture->Release();
-	//if (m_pSampler0)     m_pSampler0->Release();
+	if (m_pSampler0)     m_pSampler0->Release();
 
-	
+	if (m_D2D_PS) m_D2D_PS->Release();
 
 	if (m_pConstantBuffer)  m_pConstantBuffer->Release();
-	if (cbPerFrameBuffer) cbPerFrameBuffer->Release();
+	if (m_cbPerFrameBuffer) m_cbPerFrameBuffer->Release();
 	//if (m_pImmediateContext) m_pImmediateContext->Release();
 	//if (m_pD3D11Device)        m_pD3D11Device->Release();
 }
@@ -72,7 +72,7 @@ int Mesh::LoadObjModel(char* fileName)
 	constant_buffer_desc.CPUAccessFlags = 0;
 	constant_buffer_desc.MiscFlags = 0;
 
-	hr = m_pD3D11Device->CreateBuffer(&constant_buffer_desc, NULL, &cbPerFrameBuffer);
+	hr = m_pD3D11Device->CreateBuffer(&constant_buffer_desc, NULL, &m_cbPerFrameBuffer);
 
 	if (FAILED(hr))
 	{
@@ -118,9 +118,9 @@ int Mesh::LoadObjModel(char* fileName)
 	hr = m_pD3D11Device->CreatePixelShader(D2D_PS->GetBufferPointer(), D2D_PS->GetBufferSize(), NULL, &m_D2D_PS);
 	if (FAILED(hr)) exit(0);
 
-	light.dir = XMFLOAT3(0.25f, 0.5f, -1.0f);
-	light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
+	m_light.dir = XMFLOAT3(0.25f, 0.5f, -1.0f);
+	m_light.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	m_light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 
 	D3D11_INPUT_ELEMENT_DESC iedesc[] =
 	{
@@ -170,9 +170,9 @@ void Mesh::Draw(XMMATRIX* world, XMMATRIX* view, XMMATRIX* projection)
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 	m_pImmediateContext->PSSetShaderResources(0, 1, &m_pTexture);
 
-	constBuffPerFrame.light = light;
-	m_pImmediateContext->UpdateSubresource(cbPerFrameBuffer, 0, NULL, &constBuffPerFrame, 0, 0);
-	m_pImmediateContext->PSSetConstantBuffers(0, 1, &cbPerFrameBuffer);
+	m_constBuffPerFrame.light = m_light;
+	m_pImmediateContext->UpdateSubresource(m_cbPerFrameBuffer, 0, NULL, &m_constBuffPerFrame, 0, 0);
+	m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_cbPerFrameBuffer);
 
 	m_pImmediateContext->VSSetShader(m_pVShader, 0, 0);
 	m_pImmediateContext->PSSetShader(m_pPShader, 0, 0);

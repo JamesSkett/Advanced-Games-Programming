@@ -11,13 +11,14 @@ using namespace DirectX;
 #include "objfilemodel.h"
 #include "Math.h"
 
-
+//Shader Constant buffer
 struct MODEL_CONSTANT_BUFFER
 {
 	XMMATRIX WorldViewProjection;
 	XMMATRIX World;
 };
 
+//Light structures for the pixel shader
 struct Light
 {
 	Light()
@@ -31,12 +32,10 @@ struct Light
 	XMFLOAT4 diffuse;
 };
 
-
 struct cbPerFrame
 {
 	Light light;
 };
-
 
 __declspec(align(16)) class Mesh
 {
@@ -87,6 +86,7 @@ public:
 	float GetBoundingSphere_x();
 	float GetBoundingSphere_y();
 	float GetBoundingSphere_z();
+
 	bool GetIsSkyBox();
 	ObjFileModel* GetObject();
 
@@ -114,23 +114,23 @@ public:
 
 protected:
 	//Variables used to initialise graphics
-	ID3D11Device*        m_pD3D11Device;
-	ID3D11DeviceContext* m_pImmediateContext;
+	ID3D11Device*             m_pD3D11Device;
+	ID3D11DeviceContext*      m_pImmediateContext;
 
-	ObjFileModel*		 m_pObject;
-	ID3D11VertexShader*  m_pVShader;
-	ID3D11PixelShader*	 m_pPShader;
-	ID3D11PixelShader*	 m_D2D_PS;
-	ID3D11InputLayout*	 m_pInputLayout;
-	ID3D11Buffer*		 m_pConstantBuffer;
+	ObjFileModel*		      m_pObject;
+	ID3D11VertexShader*       m_pVShader;
+	ID3D11PixelShader*	      m_pPShader;
+	ID3D11PixelShader*	      m_D2D_PS;
+	ID3D11InputLayout*	      m_pInputLayout;
+	ID3D11Buffer*		      m_pConstantBuffer;
 
 	ID3D11ShaderResourceView* m_pTexture;
-	ID3D11SamplerState* m_pSampler0;
+	ID3D11SamplerState*       m_pSampler0;
 
 	//lighting variables
-	ID3D11Buffer* cbPerFrameBuffer;
-	Light light;
-	cbPerFrame constBuffPerFrame;
+	ID3D11Buffer*             m_cbPerFrameBuffer;
+	Light m_light;
+	cbPerFrame m_constBuffPerFrame;
 
 	
 
@@ -146,5 +146,6 @@ protected:
 
 	void CalculateModelCentrePoint();
 	void CalculateBoundingSphereRadius();
+
 };
 
