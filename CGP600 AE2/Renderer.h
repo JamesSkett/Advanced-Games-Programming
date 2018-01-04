@@ -16,6 +16,7 @@ using namespace DirectX;
 #include "Scene_Node.h"
 #include "SkyBox.h"
 #include "Time.h"
+#include "Planet.h"
 
 __declspec(align(16)) class Renderer
 {
@@ -36,16 +37,12 @@ public:
 	HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 	HRESULT InitialiseD3D();
 	void ShutdownD3D();
-	void RenderFrame(Scene_Node* rootNode);
+	void RenderFrame(Scene_Node* rootNode, vector <Planet*> planets);
 	HRESULT InitialiseGraphics(void);
 
 	HRESULT InitialiseInput();
 	void ReadInputState();
 	bool IsKeyPressed(unsigned char DI_keycode);
-
-	float GetMousX();
-
-	float GetMousY();
 
 	static Camera* camera;
 	static SkyBox* skyBox;
@@ -55,6 +52,9 @@ public:
 	static ID3D11DeviceContext*    m_pImmediateContext;
 
 	DIMOUSESTATE mouseCurrState;
+
+	static XMMATRIX identity, projection, view;
+
 
 private:
 	
@@ -90,7 +90,7 @@ private:
 	IDirectInputDevice8* m_mouse_device;
 	unsigned char m_keyboard_keys_state[256];
 
-	Text2D* text;
+	Text2D* m_FPSCount;
 	int m_fps = 0;
 	stringstream m_FPS;
 };

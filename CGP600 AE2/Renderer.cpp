@@ -12,6 +12,10 @@ Camera* Renderer::camera;
 SkyBox* Renderer::skyBox;
 Time Renderer::time;
 
+XMMATRIX Renderer::view;
+XMMATRIX Renderer::projection;
+XMMATRIX Renderer::identity;
+
 Renderer::Renderer()
 {
 }
@@ -47,6 +51,8 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 		rc.bottom - rc.top, NULL, NULL, hInstance, NULL);
 	if (!m_hWnd)
 		return E_FAIL;
+
+
 
 	ShowWindow(m_hWnd, nCmdShow);
 
@@ -243,11 +249,11 @@ void Renderer::ShutdownD3D()
 	if (m_pAlphaBlendDisable) m_pAlphaBlendDisable->Release();
 }
 
-void Renderer::RenderFrame(Scene_Node* rootNode)
+void Renderer::RenderFrame(Scene_Node* rootNode, vector <Planet*> planets)
 {
 	//InitialiseGraphics();
 
-	
+	SetCursorPos(960, 540);
 
 	// Clear the back buffer - choose a colour you like
 	float rgba_clear_colour[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -257,10 +263,9 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 
 	ReadInputState();
 
-	XMMATRIX identity, projection, view;
 
 	identity = XMMatrixIdentity();
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_screenWidth / m_screenHeight, 0.1f, 500.0f);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(70.0f), m_screenWidth / m_screenHeight, 0.1f, 500.0f);
 	view = camera->GetViewMatrix();
 
 	skyBox->SetXPos(camera->GetX());
@@ -272,17 +277,20 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 
 	m_fps = time.GetFPS();
 
-	//m_FPS << "FPS " << m_fps;
-
 	string score = "FPS:";
 
 	score = score + to_string(m_fps);
 
-	text->AddText(score, -1.0f, 1.0f, 0.02f);
+	m_FPSCount->AddText(score, -1.0f, 1.0f, 0.02f);
 
 	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendEnable, 0, 0xffffffff);
 
-	text->RenderText();
+	m_FPSCount->RenderText();
+
+	for (unsigned int i = 0; i < planets.size(); i++)
+	{
+		planets[i]->RenderText();
+	}
 
 	m_pImmediateContext->OMSetBlendState(m_pAlphaBlendDisable, 0, 0xffffffff);
 
@@ -307,7 +315,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	skyBox->AddTexture("assets/spaceMap.dds");
 	skyBox->SetScale(475.0f);
 
-	text = new Text2D("assets/MyFont.png", m_pD3DDevice, m_pImmediateContext);
+	m_FPSCount = new Text2D("assets/MyFont.png", m_pD3DDevice, m_pImmediateContext);
 
 	return S_OK;
 }
@@ -373,32 +381,4 @@ bool Renderer::IsKeyPressed(unsigned char DI_keycode)
 	return m_keyboard_keys_state[DI_keycode] & 0x80;
 }
 
-float Renderer::GetMousX()
-{
-	if (mouseCurrState.lX <= -1.0)
-	{
-		mouseCurrState.lX = 0;
-	}
 
-	if (mouseCurrState.lX > 1.0);
-	{
-		mouseCurrState.lX = 1.0;
-	}
-
-	return mouseCurrState.lX;
-}
-
-float Renderer::GetMousY()
-{
-	if (mouseCurrState.lY <= -1.0)
-	{
-		mouseCurrState.lY = 0;
-	}
-
-	if (mouseCurrState.lY > 1.0);
-	{
-		mouseCurrState.lY = 0;
-	}
-
-	return mouseCurrState.lY;
-}
