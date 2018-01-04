@@ -54,8 +54,10 @@ public:
 
 private:
 	
+	const float m_screenWidth = 1920.0f;
+	const float m_screenHeight = 1080.0f;
 
-	// Rename for each tutorial
+	//Name of the Game
 	char		m_GameName[100] = "Space Game\0";
 
 	HINSTANCE	m_hInst = NULL;

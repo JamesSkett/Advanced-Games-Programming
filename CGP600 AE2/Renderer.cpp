@@ -40,7 +40,7 @@ HRESULT Renderer::InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 
 	// Create window
 	m_hInst = hInstance;
-	RECT rc = { 0, 0, 1920, 1080 };
+	RECT rc = { 0, 0, m_screenWidth, m_screenHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	m_hWnd = CreateWindow(Name, m_GameName, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left,
@@ -260,7 +260,7 @@ void Renderer::RenderFrame(Scene_Node* rootNode)
 	XMMATRIX identity, projection, view;
 
 	identity = XMMatrixIdentity();
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), m_screenWidth / m_screenHeight, 0.1f, 500.0f);
 	view = camera->GetViewMatrix();
 
 	skyBox->SetXPos(camera->GetX());
@@ -305,7 +305,7 @@ HRESULT Renderer::InitialiseGraphics(void)
 	skyBox = new SkyBox(m_pD3DDevice, m_pImmediateContext);
 	skyBox->LoadObjModel("assets/cube.obj");
 	skyBox->AddTexture("assets/spaceMap.dds");
-	skyBox->SetScale(55.0f);
+	skyBox->SetScale(475.0f);
 
 	text = new Text2D("assets/MyFont.png", m_pD3DDevice, m_pImmediateContext);
 
