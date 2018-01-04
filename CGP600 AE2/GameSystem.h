@@ -47,13 +47,13 @@ private:
 	Renderer* renderer;
 
 	Mesh* m_spaceShip;
-	Mesh* mesh2;
+	Mesh* m_planet;
 	Mesh* m_shipGuns;
 
 	Scene_Node* m_root_node;
 
 	Scene_Node* m_spaceship_node;
-	Scene_Node* m_node2;
+	Scene_Node* m_planet_node;
 	Scene_Node* m_shipGun1_node;
 	Scene_Node* m_shipGun2_node;
 
@@ -62,8 +62,8 @@ private:
 
 	//Text2D* text;
 
-	int bulletNum = 0;
-	bool isMousePressed = false;
+	int m_bulletNum = 0;
+	bool m_isMousePressed = false;
 
 	bool m_leftGun = true;
 	bool m_rightGun = false;

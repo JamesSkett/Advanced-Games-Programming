@@ -24,10 +24,10 @@ GameSystem::~GameSystem()
 		m_spaceShip = nullptr;
 	}
 
-	if (mesh2)
+	if (m_planet)
 	{
-		delete mesh2;
-		mesh2 = nullptr;
+		delete m_planet;
+		m_planet = nullptr;
 	}
 
 	/*if (cameraMesh)
@@ -66,10 +66,10 @@ GameSystem::~GameSystem()
 		m_spaceship_node = nullptr;
 	}
 
-	if (m_node2)
+	if (m_planet_node)
 	{
-		delete m_node2;
-		m_node2 = nullptr;
+		delete m_planet_node;
+		m_planet_node = nullptr;
 	}
 
 	/*if (m_camera_node)
@@ -131,8 +131,13 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 			{
 				if (m_shipBullets[i]->GetIsFired())
 				{
-					m_shipBullets[i]->UpdateProjectile(m_root_node);
+					if (m_shipBullets[i]->UpdateProjectile(m_root_node))
+					{
+						m_shipGun1_node->AddChildNode(m_shipBullets[i]);
+					}
 				}
+
+				
 			}
 
 
@@ -164,13 +169,13 @@ void GameSystem::SetupLevel()
 	m_shipGuns->AddTexture("assets/Spaceship_D.bmp");
 	
 	
-	mesh2 = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	mesh2->LoadObjModel("assets/sphere.obj");
-	mesh2->AddTexture("assets/texture.bmp");
+	m_planet = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	m_planet->LoadObjModel("assets/sphere.obj");
+	m_planet->AddTexture("assets/planetTexture.png");
 
 	m_root_node = new Scene_Node();
 	m_spaceship_node = new Scene_Node();
-	m_node2 = new Scene_Node();
+	m_planet_node = new Scene_Node();
 	m_shipGun1_node = new Scene_Node();
 	m_shipGun2_node = new Scene_Node();
 
@@ -180,22 +185,26 @@ void GameSystem::SetupLevel()
 
 
 	m_spaceship_node->SetModel(m_spaceShip);
-	m_node2->SetModel(mesh2);
+
+	m_planet_node->SetModel(m_planet);
+
 	m_shipGun1_node->SetModel(m_shipGuns);
 	m_shipGun2_node->SetModel(m_shipGuns);
 
 	m_root_node->AddChildNode(m_spaceship_node);
-	m_root_node->AddChildNode(m_node2);
+	m_root_node->AddChildNode(m_planet_node);
+
 	m_spaceship_node->AddChildNode(m_shipGun1_node);
 	m_spaceship_node->AddChildNode(m_shipGun2_node);
 
 
 	m_spaceship_node->SetScale(0.1f);
-	m_node2->SetScale(1.0f);
-	m_spaceship_node->SetZPos(10.0f);
-	m_node2->SetZPos(-3.1f);
-	m_node2->SetXPos(7.0f);
 	m_spaceship_node->SetXPos(0.0f);
+	m_spaceship_node->SetZPos(10.0f);
+
+	m_planet_node->SetZPos(100.1f);
+	m_planet_node->SetXPos(100.0f);
+	m_planet_node->SetScale(20.0f);
 
 	//Position the guns in the correct position
 	m_shipGun1_node->SetXPos(-15.0f);
@@ -221,6 +230,7 @@ void GameSystem::SetupLevel()
 	{
 		m_shipBullets[i]->SetModel(m_bulletMesh);
 		m_shipGun1_node->AddChildNode(m_shipBullets[i]);
+		m_shipBullets[i]->setCanCollide(false);
 	}
 
 	//XMMATRIX identity = XMMatrixIdentity();
@@ -232,14 +242,14 @@ void GameSystem::GetKeyboardInput()
 {
 	if (renderer->IsKeyPressed(DIK_1))
 	{
-		m_node2->setCanCollide(true);
-		m_node2->setCanDraw(true);
+		m_planet_node->setCanCollide(true);
+		m_planet_node->setCanDraw(true);
 	}
 
 	if (renderer->IsKeyPressed(DIK_2))
 	{
-		m_node2->setCanCollide(false);
-		m_node2->setCanDraw(false);
+		m_planet_node->setCanCollide(false);
+		m_planet_node->setCanDraw(false);
 	}
 
 	if (renderer->IsKeyPressed(DIK_W))
@@ -323,35 +333,45 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->mouseCurrState.rgbButtons[0])
 	{
-		if (!isMousePressed)
+		if (!m_isMousePressed)
 		{
-			m_shipBullets[bulletNum]->SetIsFired(true);
+			m_shipGun1_node->DetachNode(m_shipBullets[m_bulletNum]);
+			m_root_node->AddChildNode(m_shipBullets[m_bulletNum]);
+
+			m_shipBullets[m_bulletNum]->SetXPos(m_spaceship_node->GetXPos() - 7.0f);
+			m_shipBullets[m_bulletNum]->SetYPos(m_spaceship_node->GetYPos());
+			m_shipBullets[m_bulletNum]->SetZPos(m_spaceship_node->GetZPos() + 17.0f);
+
+			m_shipBullets[m_bulletNum]->SetScale(0.5f);
+			m_shipBullets[m_bulletNum]->setDirection(m_shipGun1_node->GetXDir(), m_shipGun1_node->GetYDir(), m_shipGun1_node->GetZDir());
+
+			m_shipBullets[m_bulletNum]->SetIsFired(true);
 			if (m_leftGun)
 			{
-				m_shipBullets[bulletNum]->SetStartPos(m_shipBullets[bulletNum]->GetXPos(), m_shipBullets[bulletNum]->GetYPos(), m_shipBullets[bulletNum]->GetZPos());
+				m_shipBullets[m_bulletNum]->SetStartPos(m_shipBullets[m_bulletNum]->GetXPos(), m_shipBullets[m_bulletNum]->GetYPos(), m_shipBullets[m_bulletNum]->GetZPos());
 				m_rightGun = true;
 				m_leftGun = false;
 			}
 			else if (m_rightGun)
 			{
-				m_shipBullets[bulletNum]->SetStartPos(-m_shipBullets[bulletNum]->GetXPos(), m_shipBullets[bulletNum]->GetYPos(), m_shipBullets[bulletNum]->GetZPos());
+				m_shipBullets[m_bulletNum]->SetStartPos(-m_shipBullets[m_bulletNum]->GetXPos(), m_shipBullets[m_bulletNum]->GetYPos(), m_shipBullets[m_bulletNum]->GetZPos());
 				m_rightGun = false;
 				m_leftGun = true;
 			}
-			bulletNum++;
+			m_bulletNum++;
 
-			if (bulletNum == 50)
+			if (m_bulletNum == 50)
 			{
-				bulletNum = 0;
+				m_bulletNum = 0;
 			}
 		}
-		isMousePressed = true;
+		m_isMousePressed = true;
 
 	}
 
 	if (!renderer->mouseCurrState.rgbButtons[0])
 	{
-		isMousePressed = false;
+		m_isMousePressed = false;
 
 	}
 
