@@ -172,6 +172,16 @@ bool Scene_Node::UpdateZPos(float distance, Scene_Node* rootNode)
 
 bool Scene_Node::UpdateXangle(float angle, Scene_Node* rootNode)
 {
+
+	if (m_xangle > 60.0f)
+	{
+		m_xangle = 60.0f;
+	}
+	else if (m_xangle < -60.0f)
+	{
+		m_xangle = -60.0f;
+	}
+
 	float old_xangle = m_xangle;
 	m_xangle += angle;
 
