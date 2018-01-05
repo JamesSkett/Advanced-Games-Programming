@@ -288,6 +288,7 @@ void Renderer::RenderFrame(Scene_Node* rootNode, vector <Planet*> planets)
 	//draw the skybox
 	skyBox->Draw(&view, &projection);
 
+
 	m_fps = time.GetFPS();
 
 	string score = "FPS:";
