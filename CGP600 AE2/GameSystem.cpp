@@ -192,6 +192,10 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 				m_planet1Enemies[i]->UpdateEnemy(m_spaceship_node);
 			}
 
+			for (unsigned int i = 0; i < m_planet2Enemies.size(); i++)
+			{
+				m_planet2Enemies[i]->UpdateEnemy(m_spaceship_node);
+			}
 			//set the camera to follow the spaceship
 			Renderer::camera->CameraFollow(m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
 			
@@ -230,12 +234,12 @@ void GameSystem::SetupLevel()
 	//create the planet mesh
 	m_planet = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	m_planet->LoadObjModel("assets/sphere.obj");
-	m_planet->AddTexture("assets/planetTexture.jpeg");
+	m_planet->AddTexture("assets/planetTexture.png");
 
 	//Create the enemy mesh
 	m_enemyMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
-	m_planet->LoadObjModel("assets/Enemy.obj");
-	m_planet->AddTexture("assets/enemytexture.png");
+	m_enemyMesh->LoadObjModel("assets/Enemy.obj");
+	m_enemyMesh->AddTexture("assets/enemytexture.png");
 
 	//create the scene nodes
 	m_root_node = new Scene_Node();
@@ -305,7 +309,7 @@ void GameSystem::SetupLevel()
 	float enemyzPos = PLANET_0_Z_POS;
 	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
-		m_planet1Enemies.push_back(new Enemy(ENEMY_HEALTH, enemyxPos, enemyyPos, enemyzPos, 0.5));
+		m_planet1Enemies.push_back(new Enemy(ENEMY_HEALTH, enemyxPos, enemyyPos, enemyzPos, 0.2));
 		
 		enemyzPos += 20;
 	}
@@ -316,6 +320,21 @@ void GameSystem::SetupLevel()
 		m_root_node->AddChildNode(m_planet1Enemies[i]);
 	}
 
+	enemyxPos = PLANET_1_X_POS + 100;
+	enemyyPos = PLANET_1_Y_POS;
+	enemyzPos = PLANET_1_Z_POS;
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
+	{
+		m_planet2Enemies.push_back(new Enemy(ENEMY_HEALTH, enemyxPos, enemyyPos, enemyzPos, 0.2));
+
+		enemyzPos += 30;
+	}
+
+	for (unsigned int i = 0; i < m_planet2Enemies.size(); i++)
+	{
+		m_planet2Enemies[i]->SetModel(m_enemyMesh);
+		m_root_node->AddChildNode(m_planet2Enemies[i]);
+	}
 }
 
 //Get the keyboard input
@@ -333,12 +352,12 @@ void GameSystem::GetKeyboardInput()
 
 	if (renderer->IsKeyPressed(DIK_W))
 	{
-		m_spaceship_node->MoveForward(0.3f, m_root_node);
+		m_spaceship_node->MoveForward(0.5f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_S))
 	{
-		m_spaceship_node->MoveForward(-0.1f, m_root_node);
+		m_spaceship_node->MoveForward(-0.5f, m_root_node);
 	}
 
 	if (renderer->IsKeyPressed(DIK_D))

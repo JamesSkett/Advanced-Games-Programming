@@ -412,6 +412,7 @@ bool Mesh::CheckCollision(Mesh * targetMesh)
 
 void Mesh::CalculateModelCentrePoint()
 {
+
 	float maxPosX = m_pObject->vertices[0].Pos.x;
 	float minPosX = m_pObject->vertices[0].Pos.x;
 

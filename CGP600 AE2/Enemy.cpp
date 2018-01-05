@@ -44,9 +44,9 @@ void Enemy::MoveTowardsPlayer(float targetx, float targety, float targetz)
 	m_direction.y /= magnitude;
 	m_direction.z /= magnitude;
 
-	m_x += m_direction.x;
-	m_y += m_direction.y;
-	m_z += m_direction.z;
+	m_x += m_direction.x * m_speed;
+	m_y += m_direction.y * m_speed;
+	m_z += m_direction.z * m_speed;
 }
 
 void Enemy::RemoveHealth(int health)

@@ -15,7 +15,7 @@ public:
 
 private:
 	int m_health;
-	float m_speed;
+	float m_speed = 0.5;
 
 	xyz m_direction;
 };
