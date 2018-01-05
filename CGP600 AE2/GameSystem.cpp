@@ -169,9 +169,28 @@ int GameSystem::playGame(MSG msg, HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 					}
 				}
 
+				//check for collision with the planets
+				for (unsigned int j = 0; j < m_planet1Enemies.size(); j++)
+				{
+					if (m_shipBullets[i]->CheckCollision(m_planet1Enemies[j], m_root_node))
+					{
+						m_planet1Enemies[j]->RemoveHealth(5);
+						//set the bullet back to origin and dont draw it
+						m_shipBullets[i]->SetXPos(m_spaceship_node->GetXPos());
+						m_shipBullets[i]->SetYPos(m_spaceship_node->GetYPos());
+						m_shipBullets[i]->SetZPos(m_spaceship_node->GetZPos());
+						m_shipBullets[i]->setCanCollide(false);
+						m_shipBullets[i]->setCanDraw(false);
+						m_shipBullets[i]->SetIsFired(false);
+					}
+				}
+
 			}
 
-
+			for (unsigned int i = 0; i < m_planet1Enemies.size(); i++)
+			{
+				m_planet1Enemies[i]->UpdateEnemy(m_spaceship_node);
+			}
 
 			//set the camera to follow the spaceship
 			Renderer::camera->CameraFollow(m_spaceship_node->GetXPos(), m_spaceship_node->GetYPos(), m_spaceship_node->GetZPos());
@@ -211,7 +230,12 @@ void GameSystem::SetupLevel()
 	//create the planet mesh
 	m_planet = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
 	m_planet->LoadObjModel("assets/sphere.obj");
-	m_planet->AddTexture("assets/planetTexture.png");
+	m_planet->AddTexture("assets/planetTexture.jpeg");
+
+	//Create the enemy mesh
+	m_enemyMesh = new Mesh(Renderer::m_pD3DDevice, Renderer::m_pImmediateContext);
+	m_planet->LoadObjModel("assets/Enemy.obj");
+	m_planet->AddTexture("assets/enemytexture.png");
 
 	//create the scene nodes
 	m_root_node = new Scene_Node();
@@ -275,6 +299,23 @@ void GameSystem::SetupLevel()
 		m_planets[i]->SetModel(m_planet);
 		m_root_node->AddChildNode(m_planets[i]);
 	}
+
+	float enemyxPos = PLANET_0_X_POS - 100;
+	float enemyyPos = PLANET_0_Y_POS;
+	float enemyzPos = PLANET_0_Z_POS;
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
+	{
+		m_planet1Enemies.push_back(new Enemy(ENEMY_HEALTH, enemyxPos, enemyyPos, enemyzPos, 0.5));
+		
+		enemyzPos += 20;
+	}
+
+	for (unsigned int i = 0; i < m_planet1Enemies.size(); i++)
+	{
+		m_planet1Enemies[i]->SetModel(m_enemyMesh);
+		m_root_node->AddChildNode(m_planet1Enemies[i]);
+	}
+
 }
 
 //Get the keyboard input

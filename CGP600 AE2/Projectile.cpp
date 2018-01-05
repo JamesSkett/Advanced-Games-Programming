@@ -30,7 +30,7 @@ bool Projectile::UpdateProjectile(Scene_Node* root_node)
 
 		distance = sqrt(pow(currentPos.x - m_startPos.x, 2) + pow(currentPos.y - m_startPos.y, 2) + pow(currentPos.z - m_startPos.z, 2));
 
-		if (distance >= 1000.0f)
+		if (distance >= 75.0f)
 		{
 			m_isFired = false;
 

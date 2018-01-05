@@ -17,7 +17,7 @@ using namespace DirectX;
 #include "text2D.h"
 #include "Projectile.h"
 #include "Planet.h"
-
+#include "Enemy.h"
 
 
 class GameSystem
@@ -49,6 +49,7 @@ private:
 	Mesh* m_spaceShip;
 	Mesh* m_planet;
 	Mesh* m_shipGuns;
+	Mesh* m_enemyMesh;
 
 	//Scene management nodes
 	Scene_Node* m_root_node;
@@ -62,6 +63,9 @@ private:
 
 	//vector of planets
 	vector <Planet*> m_planets;
+
+	vector <Enemy*> m_planet1Enemies;
+	vector <Enemy*> m_planet2Enemies;
 
 	//bullet shooting values
 	int m_bulletNum = 0;
@@ -98,4 +102,10 @@ enum planet1
 	PLANET_1_Z_POS = 200,
 	PLANET_1_SIZE = 10,
 	PLANET_1_HEALTH = 75
+};
+
+enum enemy
+{
+	ENEMY_HEALTH = 30,
+	NUM_OF_ENEMIES = 4
 };

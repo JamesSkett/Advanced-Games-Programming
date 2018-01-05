@@ -122,7 +122,7 @@ HRESULT Renderer::InitialiseD3D()
 	sd.OutputWindow = m_hWnd;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
-	sd.Windowed = true;
+	sd.Windowed = false;
 
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
 	{

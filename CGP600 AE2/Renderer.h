@@ -17,7 +17,6 @@ using namespace DirectX;
 #include "SkyBox.h"
 #include "Time.h"
 #include "Planet.h"
-#include "ParticleSystem.h"
 
 
 __declspec(align(16)) class Renderer
